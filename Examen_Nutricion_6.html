@@ -102,6 +102,21 @@ input[type=text]:focus{ border-color:var(--blue-600); outline:none; }
 .resume .row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .resume .btn{ min-width:0; }
 
+/* Acceso y bienvenida */
+.pw{ position:relative; }
+.pw input{ padding-right:52px; }
+.eye{ position:absolute; right:4px; top:50%; transform:translateY(-50%); width:44px; height:40px; border:none; background:transparent; font-size:1.3rem; border-radius:8px; opacity:.75; }
+.eye[aria-pressed=true]{ opacity:1; background:var(--panel); }
+.welcome{ width:100%; max-width:520px; text-align:center; background:var(--pastel-blue); border:2px solid var(--blue-600); border-radius:16px; padding:1.2rem 1rem; }
+.hello{ font-size:clamp(1.3rem,4.5vw,1.8rem); font-weight:900; color:var(--blue-dark); overflow-wrap:anywhere; line-height:1.25; }
+.who{ color:var(--blue-700); font-weight:700; margin-top:.2rem; }
+.winfo{ color:var(--blue-700); margin:.8rem 0 1rem; line-height:1.5; }
+.wbtns{ display:flex; flex-direction:column; align-items:center; gap:.6rem; }
+.wbtns .btn{ width:100%; max-width:320px; }
+.syncline{ text-align:right; font-size:.82rem; color:#7a86a8; font-weight:600; min-height:1.2em; margin:-.4rem 0 .5rem; }
+.syncline.err{ color:var(--red); }
+.syncline .ar{ display:inline-block; margin:0 0 0 .5em; font-size:.95em; color:inherit; }
+
 /* Examen */
 .qwrap{ flex:1; width:100%; max-width:820px; margin:0 auto; padding:.2rem 0 1rem; }
 .qcard{ background:#fff; border-radius:18px; padding:1.4rem 1.2rem 1.2rem; border:2px solid #e0e0e0; position:relative;
@@ -243,27 +258,28 @@ input[type=text]:focus{ border-color:var(--blue-600); outline:none; }
     <div class="start-content">
       <div class="advice-box" data-i18n="intro">Lee cada pregunta con <span class="highlight-keyword">calma</span>. Puedes ir y volver con las <span class="highlight-keyword">flechas</span> y usar el <span class="highlight-keyword">menú</span> para saltar a cualquier pregunta. Marca <span class="highlight-keyword">«Estoy seguro/a»</span> cuando lo estés de tu respuesta. Al terminar no verás la nota: tu maestro la revisará.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong></div>
 
-      <div id="resumeBox" class="resume" hidden>
-        <p id="resumeTxt"></p>
-        <div class="row">
-          <button type="button" id="btnResume" class="btn btn-blue" data-i18n="resume">Continuar</button>
-          <button type="button" id="btnNotMe" class="btn btn-ghost" data-i18n="notMe">No soy yo</button>
+      <form id="loginForm" class="form" autocomplete="off" novalidate>
+        <label class="fl" for="usr" data-i18n="lblUser">Usuario</label>
+        <input type="text" id="usr" maxlength="40" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text">
+        <label class="fl" for="pwd" data-i18n="lblPwd">Clave</label>
+        <div class="pw">
+          <input type="password" id="pwd" maxlength="40" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
+          <button type="button" id="pwdEye" class="eye" aria-label="Mostrar clave" aria-pressed="false">👁</button>
+        </div>
+        <p class="err" id="loginErr" role="alert"></p>
+        <div style="text-align:center;margin-top:.4rem"><button type="submit" class="btn btn-primary" id="btnLogin"><span data-i18n="login">Entrar</span></button></div>
+      </form>
+
+      <div id="welcome" class="welcome" hidden>
+        <div class="hello" id="helloTxt"></div>
+        <div class="who" id="whoTxt"></div>
+        <p class="winfo" id="welcomeMsg"></p>
+        <div class="wbtns">
+          <button type="button" id="btnGo" class="btn btn-primary"></button>
+          <button type="button" id="btnRestart" class="btn btn-ghost" hidden data-i18n="restart">Empezar de nuevo</button>
+          <button type="button" id="btnLogout" class="btn btn-ghost" data-i18n="notMe">No soy yo</button>
         </div>
       </div>
-
-      <form id="startForm" class="form" autocomplete="off" novalidate>
-        <label class="fl" for="ape" data-i18n="lblApe">Apellidos</label>
-        <input type="text" id="ape" maxlength="40" autocomplete="off" autocapitalize="words" spellcheck="false">
-        <label class="fl" for="nom" data-i18n="lblNom">Nombre</label>
-        <input type="text" id="nom" maxlength="40" autocomplete="off" autocapitalize="words" spellcheck="false">
-        <label class="fl" data-i18n="lblCurso">Curso</label>
-        <div class="cursos" id="cursos">
-          <button type="button" class="cbtn" data-curso="6.º A" aria-pressed="false">6.º A</button>
-          <button type="button" class="cbtn" data-curso="6.º B" aria-pressed="false">6.º B</button>
-        </div>
-        <p class="err" id="startErr" role="alert"></p>
-        <div style="text-align:center;margin-top:.4rem"><button type="submit" class="btn btn-primary" id="btnStart" data-i18n="start">Comenzar</button></div>
-      </form>
       <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="" onerror="this.style.display='none'">
     </div>
   </section>
@@ -278,6 +294,7 @@ input[type=text]:focus{ border-color:var(--blue-600); outline:none; }
       <div class="counter" id="counter"></div>
       <div class="progress-bar" aria-hidden="true"><div class="progress-fill" id="barFill"></div></div>
     </div>
+    <div class="syncline" id="syncLine" aria-live="polite"></div>
     <main class="qwrap" id="qWrap"></main>
     <footer class="navbar">
       <button type="button" id="btnPrev" class="btn btn-blue"><span aria-hidden="true">◀</span> <span data-i18n="prev">Anterior</span></button>
@@ -306,6 +323,7 @@ input[type=text]:focus{ border-color:var(--blue-600); outline:none; }
     <div class="legend" id="legend"></div>
     <div id="menuBody"></div>
     <button type="button" class="btn btn-primary btn-wide" id="menuReview" data-i18n="review">Revisar y entregar</button>
+    <button type="button" class="btn btn-ghost btn-wide" id="menuSave"><span aria-hidden="true">💾</span> <span data-i18n="saveExit">Guardar y salir</span></button>
   </div>
 </div>
 
@@ -318,6 +336,7 @@ input[type=text]:focus{ border-color:var(--blue-600); outline:none; }
     </div>
     <div id="revBody"></div>
     <button type="button" class="btn btn-blue btn-wide" id="revKeep" data-i18n="keep">Seguir revisando</button>
+    <button type="button" class="btn btn-ghost btn-wide" id="revSave"><span aria-hidden="true">💾</span> <span data-i18n="saveExit">Guardar y salir</span></button>
     <button type="button" class="btn btn-primary btn-wide" id="revSubmit" data-i18n="submit">Entregar examen</button>
   </div>
 </div>
@@ -338,6 +357,7 @@ input[type=text]:focus{ border-color:var(--blue-600); outline:none; }
 /* =====================  CONFIGURACIÓN  ===================== */
 var API_URL = 'https://script.google.com/a/macros/g.educaand.es/s/AKfycbydIr6Z0R7g5FlpW0nv565KfynZBP-OluuQXJua6yJkMuc1i9KsKWJmMMcHbSCawvHUKg/exec';
 var TIPO    = 'examen_nutricion_6';
+var GRADO   = '6.º';
 var LS_KEY  = 'siurot_examen_nutricion_6';
 var LS_LANG = 'siurot_examen_nutricion_6_lang';
 
@@ -361,9 +381,38 @@ var T = {
   revTitle:{es:'Revisar antes de entregar', ar:'مراجعة قبل التسليم'},
   keep:{es:'Seguir revisando', ar:'كمّل المراجعة'},
   submit:{es:'Entregar examen', ar:'سلّم الامتحان'},
-  endTitle:{es:'Evaluación de Nutrición', ar:'تقييم التغذية'}
+  endTitle:{es:'Evaluación de Nutrición', ar:'تقييم التغذية'},
+  lblUser:{es:'Usuario', ar:'اسم المستخدم'},
+  lblPwd:{es:'Clave', ar:'كلمة السر'},
+  login:{es:'Entrar', ar:'دخول'},
+  restart:{es:'Empezar de nuevo', ar:'بدا من الأول'},
+  saveExit:{es:'Guardar y salir', ar:'حفظ وخروج'},
+  home:{es:'Volver al inicio', ar:'رجوع للبداية'}
 };
 var TX = {
+  hello:{es:'¡Hola, {name}!', ar:'مرحبا {name}!'},
+  whoCurso:{es:'Tu clase: {curso}', ar:'القسم ديالك: {curso}'},
+  draftInfo:{es:'Tienes un examen empezado: vas por la pregunta {n} y has contestado {k} de {t}. ¿Quieres continuar?', ar:'عندك امتحان بديتيه: وصلتي للسؤال {n} وجاوبتي على {k} من {t}. واش بغيتي تكمّل؟'},
+  freshInfo:{es:'Cuando estés listo o lista, pulsa «Comenzar».', ar:'ملي تكون واجد/ة، ضغط على «بدا».'},
+  doneInfo:{es:'Ya has entregado este examen. ¡Gracias!', ar:'سلّمتي هاد الامتحان من قبل. شكرا!'},
+  errEmpty:{es:'Escribe tu usuario y tu clave.', ar:'كتب اسم المستخدم وكلمة السر.'},
+  errCred:{es:'Usuario o clave incorrectos. Mira bien tu hoja de claves de Ajedrez Siurot.', ar:'اسم المستخدم ولا كلمة السر غالطين. شوف مزيان ف الورقة ديال أجيدريز سيوروت.'},
+  errLocked:{es:'Demasiados intentos. Espera 10 minutos o díselo a tu maestro.', ar:'بزاف د المحاولات. تسنى 10 دقايق ولا قول للمعلم.'},
+  errCurso:{es:'Este examen es para {g}. Tu clase es {curso}.', ar:'هاد الامتحان ل {g}. القسم ديالك هو {curso}.'},
+  errAlu:{es:'El examen todavía no está listo. Avisa a tu maestro.', ar:'الامتحان باقي ما واجدش. عاود قول للمعلم.'},
+  errNet:{es:'No se ha podido conectar. Comprueba internet e inténtalo otra vez.', ar:'ما قدرناش نتّصلو. تأكد من الإنترنت وعاود.'},
+  errGen:{es:'Ha ocurrido un error. Inténtalo otra vez.', ar:'وقع مشكل. عاود المحاولة.'},
+  logging:{es:'Entrando…', ar:'كندخلو…'},
+  syncSaving:{es:'Guardando…', ar:'كنحفظو…'},
+  syncOk:{es:'✔ Progreso guardado', ar:'✔ التقدم تحفظ'},
+  syncPend:{es:'Cambios sin guardar', ar:'تغييرات ما تحفظاتش'},
+  syncErr:{es:'No se pudo guardar; se reintentará', ar:'ما تحفظش؛ غادي نعاودو'},
+  savingModal:{es:'Guardando tu progreso…', ar:'كنحفظو التقدم ديالك…'},
+  seTitle:{es:'Progreso guardado', ar:'التقدم تحفظ'},
+  seText:{es:'Cuando vuelvas, entra con tu usuario y tu clave y seguirás donde lo dejaste.', ar:'ملي ترجع، دخل باسم المستخدم وكلمة السر ديالك وغاتكمل من فين وقفتي.'},
+  sfTitle:{es:'No se ha podido guardar', ar:'ما قدرناش نحفظو'},
+  sfText:{es:'Comprueba internet. No cierres la página: puedes seguir y volver a intentarlo.', ar:'تأكد من الإنترنت. ما تسدّش الصفحة: تقدر تكمّل وتعاود المحاولة.'},
+  ok:{es:'Aceptar', ar:'واخا'},
   q:{es:'Pregunta', ar:'السؤال'},
   of:{es:'de', ar:'من'},
   sure:{es:'Estoy seguro/a de mi respuesta', ar:'أنا متأكد/ة من الجواب ديالي'},
@@ -385,12 +434,9 @@ var TX = {
   sentSub:{es:'Ya puedes cerrar esta pestaña.', ar:'دابا تقدر تسد هاد الصفحة.'},
   sendErr:{es:'Todavía no se ha podido enviar. No cierres la página: seguimos intentándolo.', ar:'باقي ما قدرناش نصيفطو الامتحان. ما تسدّش الصفحة: غادي نعاودو المحاولة.'},
   retry:{es:'Reintentar ahora', ar:'عاود دابا'},
-  resumeTxt:{es:'Hay un examen sin terminar de {name} ({curso}).', ar:'كاين واحد الامتحان ما كمّلوش {name} ({curso}).'},
   dTitle:{es:'¿Empezar un examen nuevo?', ar:'واش بغيتي تبدا امتحان جديد؟'},
   dText:{es:'Se borrarán las respuestas del examen sin terminar de {name}.', ar:'غادي تتمسح الأجوبة ديال الامتحان اللي ما كمّلوش {name}.'},
   yesNew:{es:'Sí, empezar de nuevo', ar:'إيه، بدا من جديد'},
-  errNames:{es:'Escribe tus apellidos y tu nombre (solo letras).', ar:'كتب اللقب والاسم ديالك (غير الحروف).'},
-  errCurso:{es:'Elige tu curso.', ar:'اختار القسم ديالك.'},
   toastFirst:{es:'Primero elige una respuesta.', ar:'اختار جواب لولا.'},
   rowHint:{es:'Elige un aparato en cada fila.', ar:'اختار جهاز واحد ف كل سطر.'},
   bankHint:{es:'Arrastra cada órgano a su aparato, o toca el órgano y después el aparato. Si te equivocas, toca el órgano para devolverlo arriba.',
@@ -634,25 +680,46 @@ var S = null;
 var phase = 'start';     // start | exam | end
 var depth = 0;           // 0 inicio, 1 examen, 2 menú/revisión
 var overlayOpen = false;
-var selCurso = '';
 var selOrgan = null;     // órgano seleccionado (tap-tap)
 var dragOrgan = null;    // órgano que se está arrastrando
+var USER = null;         // {usuario, clave, alumno, curso} (la clave solo vive en memoria)
+var lastTick = 0;
 
-function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){} }
-function loadSaved(){
+function normU(s){ return String(s||'').trim().toLowerCase(); }
+function lsKey(u){ return LS_KEY+'_'+u; }
+function tick(){                                    // tiempo activo (se ignoran pausas largas)
+  if(!S) return; var n=Date.now();
+  if(lastTick){ S.act=(S.act||0)+Math.min(n-lastTick,120000)/1000; }
+  lastTick=n;
+}
+function save(){
+  if(!S) return;
+  if(phase==='exam') tick();
+  S.upd=Date.now();
+  try{ localStorage.setItem(lsKey(S.usuario), JSON.stringify(S)); }catch(e){}
+  scheduleSync();
+}
+function checkState(s,usuario){
   try{
-    var r = localStorage.getItem(LS_KEY); if(!r) return null;
-    var s = JSON.parse(r);
-    if(!s || !Array.isArray(s.order) || s.order.length!==TOTAL) return null;
+    if(!s || typeof s!=='object' || s.usuario!==usuario) return null;
+    if(!Array.isArray(s.order) || s.order.length!==TOTAL) return null;
     for(var i=0;i<s.order.length;i++){ if(!QMAP[s.order[i]]) return null; }
-    s.answers = s.answers||{}; s.safe = s.safe||{}; s.rowOrder = s.rowOrder||{};
+    s.answers = (s.answers && typeof s.answers==='object') ? s.answers : {};
+    s.safe = (s.safe && typeof s.safe==='object') ? s.safe : {};
+    s.rowOrder = (s.rowOrder && typeof s.rowOrder==='object') ? s.rowOrder : {};
+    Q.forEach(function(q){ if(q.rows && !Array.isArray(s.rowOrder[q.id])) s.rowOrder[q.id]=shuffle(q.rows.map(function(r){ return r.id; })); });
     if(typeof s.cur!=='number' || s.cur<0 || s.cur>=TOTAL) s.cur=0;
+    s.act = Number(s.act)||0; s.upd = Number(s.upd)||0; s.leaves = Number(s.leaves)||0;
+    if(typeof s.attemptId!=='string' || !/^[A-Za-z0-9\-]{8,64}$/.test(s.attemptId)) return null;
     return s;
   }catch(e){ return null; }
 }
-function clearSaved(){ try{ localStorage.removeItem(LS_KEY); }catch(e){} }
+function loadSaved(usuario){
+  try{ var r=localStorage.getItem(lsKey(usuario)); return r ? checkState(JSON.parse(r),usuario) : null; }catch(e){ return null; }
+}
+function clearSaved(usuario){ try{ localStorage.removeItem(lsKey(usuario)); }catch(e){} }
 
-function newAttempt(ape,nom,curso){
+function newAttempt(u){
   var order=[];
   SECTIONS.forEach(function(sec){
     var ids = Q.filter(function(q){ return q.sec===sec.id; }).map(function(q){ return q.id; });
@@ -660,8 +727,8 @@ function newAttempt(ape,nom,curso){
   });
   var rowOrder={};
   Q.forEach(function(q){ if(q.rows) rowOrder[q.id]=shuffle(q.rows.map(function(r){ return r.id; })); });
-  return {attemptId:uid(), apellidos:ape, nombre:nom, curso:curso, order:order, rowOrder:rowOrder,
-          answers:{}, safe:{}, cur:0, t0:Date.now(), tEnd:0, leaves:0, submitted:false, sent:false};
+  return {attemptId:uid(), usuario:u.usuario, alumno:u.alumno, curso:u.curso, order:order, rowOrder:rowOrder,
+          answers:{}, safe:{}, cur:0, t0:Date.now(), act:0, upd:Date.now(), leaves:0, submitted:false, sent:false};
 }
 
 function started(q){
@@ -714,7 +781,7 @@ window.addEventListener('popstate', function(e){
 
 function leaveToStart(){
   phase='start'; closeOverlaysUI(); hideModal(); selOrgan=null;
-  show('s-start'); refreshResumeBox();
+  show('s-start'); paintWelcome();
 }
 
 /* =====================  MODAL / AVISO  ===================== */
@@ -748,7 +815,7 @@ function applyLang(){
   });
   $('langEs').classList.toggle('active-lang', lang==='es');
   $('langAr').classList.toggle('active-lang', lang==='ar');
-  refreshResumeBox();
+  paintWelcome(); paintSync();
   if(phase==='exam' && S){ renderQuestion(true); }
   if(!$('menu').hidden) renderMenu();
   if(!$('review').hidden) renderReview();
@@ -762,58 +829,156 @@ function setLang(l){
 $('langEs').addEventListener('click', function(){ setLang('es'); });
 $('langAr').addEventListener('click', function(){ setLang('ar'); });
 
-/* =====================  INICIO  ===================== */
-var NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M}' .\-]{0,39}$/u;
-function cleanName(s){ return String(s||'').replace(/\s+/g,' ').trim(); }
-
-function refreshResumeBox(){
-  var box=$('resumeBox');
-  var sv = loadSaved();
-  if(sv && !sv.submitted && phase==='start'){
-    var name = sv.nombre+' '+sv.apellidos;
-    $('resumeTxt').innerHTML = bit(TX.resumeTxt,{name:esc(name),curso:esc(sv.curso)});
-    box.hidden=false;
-  } else { box.hidden=true; }
+/* =====================  RED (POST al script)  ===================== */
+async function postJson(obj, ms){
+  var to=null;
+  try{
+    var ctrl=new AbortController(); to=setTimeout(function(){ ctrl.abort(); }, ms||25000);
+    var r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(obj),signal:ctrl.signal,redirect:'follow'});
+    var j=await r.json(); clearTimeout(to); return j;
+  }catch(err){ clearTimeout(to); return null; }
 }
 
-$('cursos').addEventListener('click', function(e){
-  var b=e.target.closest('.cbtn'); if(!b) return;
-  selCurso=b.getAttribute('data-curso');
-  document.querySelectorAll('.cbtn').forEach(function(x){ x.setAttribute('aria-pressed', x===b?'true':'false'); });
+/* =====================  GUARDADO DEL PROGRESO EN EL SERVIDOR  ===================== */
+var syncTimer=null, syncBusy=false, syncDirty=false, syncSt='idle';   // idle | saving | ok | err | pend
+function paintSync(){
+  var el=$('syncLine'); if(!el) return;
+  var t = syncSt==='saving' ? TX.syncSaving : syncSt==='ok' ? TX.syncOk : syncSt==='err' ? TX.syncErr : syncSt==='pend' ? TX.syncPend : null;
+  el.className='syncline'+(syncSt==='err'?' err':'');
+  el.innerHTML = t ? bit(t) : '';
+}
+function setSync(st){ syncSt=st; paintSync(); }
+function scheduleSync(){
+  if(!S || S.submitted || !USER) return;
+  syncDirty=true;
+  if(syncSt!=='saving') setSync('pend');
+  if(!syncTimer && !syncBusy){ syncTimer=setTimeout(function(){ syncTimer=null; syncNow(); }, 12000); }
+}
+async function syncNow(){
+  clearTimeout(syncTimer); syncTimer=null;
+  if(!S || S.submitted || !USER) return true;
+  if(syncBusy){ syncDirty=true; return false; }
+  syncBusy=true; syncDirty=false; setSync('saving');
+  var j=await postJson({tipo:TIPO,accion:'guardar',usuario:USER.usuario,clave:USER.clave,borrador:JSON.parse(JSON.stringify(S))},20000);
+  syncBusy=false;
+  var ok=!!(j && j.ok);
+  if(ok){
+    if(syncDirty){ setSync('pend'); syncTimer=setTimeout(function(){ syncTimer=null; syncNow(); },3000); }
+    else setSync('ok');
+  } else {
+    syncDirty=true; setSync('err');
+    syncTimer=setTimeout(function(){ syncTimer=null; syncNow(); },30000);
+  }
+  return ok;
+}
+window.addEventListener('online', function(){ if(syncDirty && phase==='exam') syncNow(); });
+
+/* =====================  ACCESO  ===================== */
+var loggingIn=false;
+$('pwdEye').addEventListener('click', function(){
+  var inp=$('pwd'), show=inp.type==='password';
+  inp.type = show ? 'text' : 'password';
+  this.setAttribute('aria-pressed', show?'true':'false');
+  this.textContent = show ? '🙈' : '👁';
 });
 
-$('startForm').addEventListener('submit', function(e){
+function paintWelcome(){
+  var w=$('welcome');
+  if(!USER || phase!=='start'){ w.hidden=true; $('loginForm').hidden = !!USER; return; }
+  $('loginForm').hidden=true; w.hidden=false;
+  $('helloTxt').innerHTML = bi(TX.hello.es.replace('{name}',USER.alumno), TX.hello.ar.replace('{name}',USER.alumno));
+  $('whoTxt').innerHTML = bi(TX.whoCurso.es.replace('{curso}',USER.curso), TX.whoCurso.ar.replace('{curso}',USER.curso));
+  var go=$('btnGo'), rs=$('btnRestart');
+  if(USER.done){
+    $('welcomeMsg').innerHTML=bit(TX.doneInfo); go.hidden=true; rs.hidden=true;
+  } else if(S && !S.submitted){
+    var k=countComplete();
+    $('welcomeMsg').innerHTML=bit(TX.draftInfo,{n:S.cur+1,k:k,t:TOTAL});
+    go.hidden=false; go.innerHTML=bit(T.resume); rs.hidden=false;
+  } else {
+    $('welcomeMsg').innerHTML=bit(TX.freshInfo); go.hidden=false; go.innerHTML=bit(T.start); rs.hidden=true;
+  }
+}
+function showLogin(msg){
+  USER=null; S=null; phase='start'; $('loginForm').hidden=false; $('welcome').hidden=true;
+  $('usr').value=''; $('pwd').value=''; $('pwd').type='password'; $('pwdEye').setAttribute('aria-pressed','false'); $('pwdEye').textContent='👁';
+  $('loginErr').innerHTML = msg ? bit(msg) : '';
+  setSync('idle'); syncDirty=false; clearTimeout(syncTimer); syncTimer=null; lastTick=0;
+  show('s-start');
+}
+function loginError(j){
+  if(!j) return bit(TX.errNet);
+  switch(j.error){
+    case 'credenciales': return bit(TX.errCred);
+    case 'bloqueado': return bit(TX.errLocked);
+    case 'alumnado': return bit(TX.errAlu);
+    case 'curso': return bit(TX.errCurso,{g:GRADO,curso:esc(j.curso||'')});
+    default: return bit(TX.errGen);
+  }
+}
+
+$('loginForm').addEventListener('submit', async function(e){
   e.preventDefault();
-  var ape=cleanName($('ape').value), nom=cleanName($('nom').value);
-  var err=$('startErr');
-  if(!NAME_RE.test(ape) || !NAME_RE.test(nom)){ err.innerHTML=bit(TX.errNames); return; }
-  if(!selCurso){ err.innerHTML=bit(TX.errCurso); return; }
-  err.textContent='';
-  var go=function(){ S=newAttempt(ape,nom,selCurso); save(); beginExam(); };
-  var sv=loadSaved();
-  if(sv && !sv.submitted){
-    showModal(bit(TX.dTitle), bit(TX.dText,{name:esc(sv.nombre+' '+sv.apellidos)}), [
-      {label:bit(TX.back), cls:'btn-ghost', fn:null},
-      {label:bit(TX.yesNew), cls:'btn-danger', fn:go}
-    ]);
-  } else go();
+  if(loggingIn) return;
+  var u=normU($('usr').value), c=normU($('pwd').value), err=$('loginErr');
+  if(!u || !c){ err.innerHTML=bit(TX.errEmpty); return; }
+  loggingIn=true; err.textContent='';
+  var btn=$('btnLogin'); btn.disabled=true; btn.innerHTML='<span>'+bit(TX.logging)+'</span>';
+  var j=await postJson({tipo:TIPO,accion:'entrar',usuario:u,clave:c},25000);
+  loggingIn=false; btn.disabled=false; btn.innerHTML='<span data-i18n="login">'+bit(T.login)+'</span>';
+  if(!j || !j.ok){ err.innerHTML=loginError(j); return; }
+  USER={usuario:u, clave:c, alumno:j.alumno, curso:j.curso, done:!!j.entregado};
+  S=null;
+  if(!USER.done){
+    var local=loadSaved(u), server=checkState(j.borrador,u);
+    if(local && local.submitted && !local.sent){         // entregó pero no llegó a enviarse: reintentar
+      S=local; phase='end'; show('s-end'); sendNow(); return;
+    }
+    if(local && local.submitted) local=null;
+    if(server && server.submitted) server=null;
+    S = (local && server) ? (local.upd>=server.upd ? local : server) : (local||server);
+  }
+  phase='start'; paintWelcome(); show('s-start');
 });
 
-$('btnResume').addEventListener('click', function(){
-  var sv=loadSaved(); if(!sv) return; S=sv; beginExam();
+$('btnGo').addEventListener('click', function(){
+  if(!USER) return;
+  if(!S){ S=newAttempt(USER); save(); }
+  beginExam();
 });
-$('btnNotMe').addEventListener('click', function(){
-  var sv=loadSaved(); if(!sv){ refreshResumeBox(); return; }
-  showModal(bit(TX.dTitle), bit(TX.dText,{name:esc(sv.nombre+' '+sv.apellidos)}), [
+$('btnRestart').addEventListener('click', function(){
+  if(!USER) return;
+  showModal(bit(TX.dTitle), bit(TX.dText,{name:esc(USER.alumno)}), [
     {label:bit(TX.back), cls:'btn-ghost', fn:null},
-    {label:bit(TX.yesNew), cls:'btn-danger', fn:function(){ clearSaved(); S=null; refreshResumeBox(); }}
+    {label:bit(TX.yesNew), cls:'btn-danger', fn:function(){ S=newAttempt(USER); save(); beginExam(); }}
   ]);
 });
+$('btnLogout').addEventListener('click', function(){ if(USER && S && !S.submitted) save(); showLogin(); });
 
 function beginExam(){
-  phase='exam'; selOrgan=null; pushDepth(1);
-  show('s-exam'); renderQuestion(true);
+  phase='exam'; selOrgan=null; lastTick=Date.now(); pushDepth(1);
+  show('s-exam'); setSync(syncDirty?'pend':'idle'); renderQuestion(true);
+  syncDirty=true; scheduleSync();
 }
+
+/* Guardar y salir */
+async function saveAndExit(){
+  closeOverlaysUI(); if(depth===2){ depth=1; try{ history.back(); }catch(e){} }
+  tick(); save();
+  showModal(bit(TX.savingModal), '<div class="spin" aria-hidden="true"></div>', []);
+  var ok=await syncNow();
+  hideModal();
+  if(ok){
+    showModal(bit(TX.seTitle), bit(TX.seText), [{label:bit(TX.ok), cls:'btn-primary', fn:function(){ showLogin(); }}]);
+  } else {
+    showModal(bit(TX.sfTitle), bit(TX.sfText), [
+      {label:bit(TX.retry), cls:'btn-primary', fn:saveAndExit},
+      {label:bit(TX.back), cls:'btn-ghost', fn:function(){ if(phase==='exam') renderQuestion(false); }}
+    ]);
+  }
+}
+$('menuSave').addEventListener('click', saveAndExit);
+$('revSave').addEventListener('click', saveAndExit);
 
 /* =====================  RENDER DE PREGUNTAS  ===================== */
 function curQ(){ return QMAP[S.order[S.cur]]; }
@@ -988,7 +1153,7 @@ document.addEventListener('keydown', function(e){
 });
 
 document.addEventListener('visibilitychange', function(){
-  if(document.hidden && phase==='exam' && S && !S.submitted){ S.leaves=(S.leaves||0)+1; save(); }
+  if(document.hidden && phase==='exam' && S && !S.submitted){ S.leaves=(S.leaves||0)+1; save(); syncNow(); }
 });
 
 /* =====================  MENÚ Y REVISIÓN  ===================== */
@@ -1043,7 +1208,8 @@ $('revSubmit').addEventListener('click', function(){
 
 /* =====================  ENTREGA  ===================== */
 function finishExam(){
-  S.submitted=true; S.sent=false; S.tEnd=Date.now(); save();
+  tick(); S.submitted=true; S.sent=false; S.tEnd=Date.now(); save();
+  clearTimeout(syncTimer); syncTimer=null; syncDirty=false; setSync('idle');
   phase='end'; selOrgan=null; closeOverlaysUI();
   try{ history.replaceState({d:1},''); }catch(e){} depth=1;
   show('s-end'); renderEnd(); sendNow();
@@ -1052,10 +1218,11 @@ var endState='sending';
 function renderEnd(){
   var h='';
   if(endState==='sending'){ h='<div class="spin" aria-hidden="true"></div><div class="status">'+bit(TX.sending)+'</div>'; }
-  else if(endState==='sent'){ h='<div class="bigicon" aria-hidden="true">🎉</div><div class="status">'+bit(TX.sent)+'</div><div class="status" style="font-size:1rem;font-weight:600">'+bit(TX.sentSub)+'</div>'; }
+  else if(endState==='sent'){ h='<div class="bigicon" aria-hidden="true">🎉</div><div class="status">'+bit(TX.sent)+'</div><div class="status" style="font-size:1rem;font-weight:600">'+bit(TX.sentSub)+'</div><button type="button" class="btn btn-blue" id="btnHome">'+bit(T.home)+'</button>'; }
   else { h='<div class="spin" aria-hidden="true"></div><div class="status">'+bit(TX.sendErr)+'</div><button type="button" class="btn btn-primary" id="btnRetry">'+bit(TX.retry)+'</button>'; }
   $('endBody').innerHTML=h;
   var r=$('btnRetry'); if(r) r.addEventListener('click', function(){ sendNow(); });
+  var hm=$('btnHome'); if(hm) hm.addEventListener('click', function(){ location.reload(); });
 }
 function buildPayload(){
   var respuestas={}, seguras=[];
@@ -1065,13 +1232,12 @@ function buildPayload(){
     else respuestas[q.id]=a;
     if(S.safe[q.id]) seguras.push(q.id);
   });
-  var end = S.tEnd || Date.now();
-  return {tipo:TIPO, intento:S.attemptId, curso:S.curso, apellidos:S.apellidos, nombre:S.nombre,
-          respuestas:respuestas, seguras:seguras, tiempoSeg:Math.round((end-S.t0)/1000), salidas:S.leaves||0};
+  return {tipo:TIPO, accion:'entregar', intento:S.attemptId, usuario:USER.usuario, clave:USER.clave,
+          respuestas:respuestas, seguras:seguras, tiempoSeg:Math.round(S.act||0), salidas:S.leaves||0};
 }
 var sending=false, retryTimer=null;
 async function sendNow(){
-  if(sending || !S) return; sending=true; clearTimeout(retryTimer);
+  if(sending || !S || !USER) return; sending=true; clearTimeout(retryTimer);
   endState='sending'; renderEnd();
   var body=JSON.stringify(buildPayload());
   var ok=false;
@@ -1082,13 +1248,13 @@ async function sendNow(){
       var ctrl=new AbortController(); to=setTimeout(function(){ ctrl.abort(); },25000);
       var r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:body,signal:ctrl.signal,redirect:'follow'});
       var j=await r.json();
-      if(j && j.ok) ok=true;
+      if(j && (j.ok || j.error==='yaEntregado')) ok=true;
     }catch(err){}
     clearTimeout(to);
     if(!ok) await sleep(1500*(i+1)+Math.random()*1500);
   }
   sending=false;
-  if(ok){ S.sent=true; clearSaved(); endState='sent'; renderEnd(); }
+  if(ok){ S.sent=true; clearSaved(S.usuario); USER.clave=''; endState='sent'; renderEnd(); }
   else { endState='error'; renderEnd(); retryTimer=setTimeout(sendNow,30000); }
 }
 window.addEventListener('online', function(){ if(phase==='end' && endState==='error') sendNow(); });
@@ -1096,11 +1262,8 @@ window.addEventListener('online', function(){ if(phase==='end' && endState==='er
 /* =====================  ARRANQUE  ===================== */
 window.addEventListener('load', function(){
   applyLang();
-  var sv=loadSaved();
-  if(sv && sv.submitted && !sv.sent){          // entregó pero no llegó a enviarse: reintentar
-    S=sv; phase='end'; show('s-end'); sendNow();
-  } else if(sv && sv.submitted && sv.sent){ clearSaved(); }
-  refreshResumeBox();
+  paintWelcome();
+  setTimeout(function(){ try{ $('usr').focus(); }catch(e){} },50);
 });
 })();
 </script>
