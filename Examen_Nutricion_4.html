@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="es" translate="no" class="notranslate">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="google" content="notranslate">
+<meta name="robots" content="noindex">
+<title>Evaluación de Nutrición · 4.º</title>
+<link rel="icon" type="image/x-icon" href="https://raw.githubusercontent.com/ManuelVS8/Audios-juegos-SCIENCE/refs/heads/main/icono.ico">
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+:root{
+  --blue:#001DFF; --blue-dark:#04032B; --blue-700:#1a3a5f; --blue-600:#254fba;
+  --orange:#f59e42; --orange-700:#e67e22;
+  --bg-grad-1:#1a3a5f; --bg-grad-2:#0d2340;
+  --white:#ffffff; --green:#2ecc71; --green-700:#219150; --red:#e74c3c; --panel:#E8EAFF;
+  --pastel-blue:#e3f2fd; --pastel-orange:#ffe0b2; --pastel-green:#e1f5ea; --pastel-yellow:#FFF9DB; --yellow-700:#a17f00; --yellow:#e8b910;
+}
+[hidden]{ display:none !important; }
+body{
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background:linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+  background-attachment:fixed;
+  min-height:100vh; display:flex; justify-content:center; align-items:flex-start;
+  padding:20px 12px; color:#333; -webkit-text-size-adjust:100%;
+}
+button{ font:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible{ outline:3px solid var(--blue-dark); outline-offset:2px; }
+.game-container{
+  background:var(--white); border-radius:16px; box-shadow:0 12px 24px rgba(0,0,0,.12);
+  padding:1.2rem; max-width:980px; width:100%; min-height:640px; position:relative;
+  display:flex; flex-direction:column; margin-bottom:2rem;
+}
+header{ text-align:center; margin-bottom:.4rem; margin-top:3.2rem; }
+h1{ color:var(--blue-dark); font-size:clamp(1.45rem,4.5vw,2.4rem); font-weight:900; letter-spacing:.5px; overflow-wrap:anywhere; }
+.subtitle{ color:var(--blue-700); font-size:clamp(.95rem,3vw,1.15rem); margin-top:.25rem; }
+.highlight-keyword{ color:var(--orange); font-weight:800; }
+
+/* Darija (texto árabe: solo el texto va a la derecha, el diseño sigue en LTR) */
+.ar{ display:block; direction:rtl; text-align:right; unicode-bidi:isolate; margin-top:.3em; color:var(--blue-600); font-size:1.06em; line-height:1.55;
+  font-family:"Noto Naskh Arabic","Noto Sans Arabic","Segoe UI",Tahoma,Arial,sans-serif; }
+h1 .ar, .subtitle .ar, .advice-box .ar, .mhead .ar, .sort-box-header .ar, .draggable-item .ar, .mbtn .ar, .status .ar{ text-align:center; }
+.btn .ar{ display:inline-block; margin:0 0 0 .5em; color:inherit; }
+
+/* Botones */
+.btn{ color:#fff; border:none; padding:.75rem 1.2rem; border-radius:10px; cursor:pointer; font-weight:800;
+  transition:transform .08s ease, box-shadow .2s ease, background-color .25s ease; min-width:140px; min-height:48px;
+  display:inline-flex; align-items:center; justify-content:center; gap:.3em; flex-wrap:wrap; font-size:1rem; text-align:center; }
+.btn:hover{ transform:translateY(-2px); box-shadow:0 6px 14px rgba(0,0,0,.12); }
+.btn:active{ transform:translateY(0) scale(.97); }
+.btn-primary{ background:var(--orange); }
+.btn-primary:hover{ background:var(--orange-700); }
+.btn-blue{ background:var(--blue-600); }
+.btn-blue:hover{ filter:brightness(.9); }
+.btn-ghost{ background:#e6f2ff; color:var(--blue-700); }
+.btn-danger{ background:var(--red); }
+.btn-sm{ min-width:0; min-height:38px; padding:.4rem .9rem; font-size:.95rem; }
+.btn[disabled]{ opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }
+.btn-wide{ width:100%; max-width:420px; }
+
+.screen{ display:none; animation:fadeIn .35s ease; flex-direction:column; flex:1; }
+.screen.active{ display:flex; }
+@keyframes fadeIn{ from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+@keyframes shakeAnim{ 0%,100%{transform:translateX(0);} 20%{transform:translateX(-5px);} 40%{transform:translateX(5px);} 60%{transform:translateX(-5px);} 80%{transform:translateX(5px);} }
+
+.game-info{ display:flex; gap:.6rem; align-items:center; justify-content:space-between; margin:.3rem 0 .8rem; flex-wrap:wrap; }
+.counter{ font-weight:900; color:var(--blue-700); font-size:clamp(.95rem,2.3vw,1.15rem); white-space:nowrap; }
+.progress-bar{ flex:1; height:10px; background:#e6f2ff; border-radius:999px; overflow:hidden; min-width:80px; }
+.progress-fill{ height:100%; width:0%; background:linear-gradient(90deg, var(--orange) 0%, var(--orange-700) 100%); transition:width .3s ease; }
+
+/* Controles superiores */
+.top-controls{ position:absolute; top:.8rem; right:1rem; display:flex; align-items:center; gap:8px; z-index:20; }
+.top-left{ position:absolute; top:.8rem; left:1rem; z-index:20; }
+.lang-pill{ display:flex; align-items:center; background:#fff; border-radius:999px; padding:3px; gap:3px; box-shadow:0 2px 8px rgba(0,0,0,.12); border:1px solid #e0e0e0; }
+.lang-pill button{ width:34px; height:34px; border-radius:50%; border:none; font-size:1.15rem; display:flex; align-items:center; justify-content:center;
+  background:transparent; transition:background .2s, opacity .2s, transform .15s; }
+.lang-pill button.active-lang{ background:var(--blue-600); transform:scale(1.08); }
+.lang-pill button:not(.active-lang){ opacity:.5; }
+.lang-pill button:hover:not(.active-lang){ opacity:.8; transform:scale(1.05); }
+
+.mute-btn{ width:40px; height:40px; border-radius:50%; border:none; background:var(--orange); display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px rgba(0,0,0,.12); transition:background .2s, transform .15s; }
+.mute-btn:hover{ transform:scale(1.06); }
+.mute-btn.muted{ background:#9aa3b5; }
+.mute-btn svg{ width:22px; height:22px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.mute-btn .off{ display:none; } .mute-btn.muted .on{ display:none; } .mute-btn.muted .off{ display:block; }
+
+/* Inicio */
+.start-content{ display:flex; flex-direction:column; justify-content:center; align-items:center; flex:1; gap:1rem; padding:1rem; }
+.advice-box{ background:var(--panel); border-left:4px solid var(--blue-700); padding:1rem 1.2rem; border-radius:12px; color:var(--blue-700);
+  max-width:760px; width:100%; text-align:center; font-size:clamp(1rem,3vw,1.15rem); line-height:1.5; }
+.start-image{ max-width:260px; width:70%; margin:0 auto; }
+.form{ width:100%; max-width:460px; }
+label.fl{ display:block; font-weight:800; color:var(--blue-700); margin:12px 0 6px; }
+input[type=text]{ width:100%; font-size:1.1rem; padding:10px 12px; border:2px solid #ddd; border-radius:8px; background:#fff; color:#222; }
+input[type=text]:focus{ border-color:var(--blue-600); outline:none; }
+.cursos{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.cbtn{ padding:12px; border:2px solid #ddd; background:#fff; border-radius:10px; font-weight:800; font-size:1.1rem; color:var(--blue-700); }
+.cbtn[aria-pressed=true]{ background:var(--blue-600); border-color:var(--blue-600); color:#fff; }
+.err{ color:var(--red); min-height:1.4em; margin:10px 0 0; font-weight:700; text-align:center; }
+.resume{ background:var(--pastel-orange); border:2px solid var(--orange); border-radius:12px; padding:14px; width:100%; max-width:460px; }
+.resume p{ margin:0 0 10px; color:var(--blue-dark); font-weight:700; text-align:center; }
+.resume .row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.resume .btn{ min-width:0; }
+
+/* Examen */
+.qwrap{ flex:1; width:100%; max-width:820px; margin:0 auto; padding:.2rem 0 1rem; }
+.qcard{ background:#fff; border-radius:18px; padding:1.4rem 1.2rem 1.2rem; border:2px solid #e0e0e0; position:relative;
+  box-shadow:0 6px 20px rgba(0,0,0,.1), 0 2px 6px rgba(0,0,0,.06); }
+.qcard::before{ content:''; position:absolute; top:0; left:0; right:0; height:6px; background:linear-gradient(90deg, var(--blue-600), var(--orange), var(--green)); border-radius:16px 16px 0 0; }
+.qtext{ margin:.4rem 0 14px; font-size:clamp(1.12rem,3.4vw,1.4rem); line-height:1.45; color:var(--blue-dark); font-weight:700; overflow-wrap:anywhere; }
+.hint{ color:var(--blue-700); margin:-6px 0 12px; font-size:.98rem; font-weight:600; }
+.opts{ display:grid; gap:10px; }
+.opt{ display:flex; gap:12px; align-items:flex-start; width:100%; text-align:left; background:#fff; border:2px solid #d9dff0; border-radius:12px; padding:11px 12px; font-size:1.04rem; line-height:1.4; color:#333; }
+.opt .badge{ flex:0 0 auto; width:34px; height:34px; border-radius:50%; background:var(--panel); display:grid; place-items:center; font-weight:900; color:var(--blue-700); }
+.opt .otext{ flex:1; min-width:0; overflow-wrap:anywhere; padding-top:3px; }
+.opt:hover{ border-color:var(--blue-600); }
+.opt.sel{ border-color:var(--blue-600); background:var(--pastel-blue); }
+.opt.sel .badge{ background:var(--blue-600); color:#fff; }
+.safe{ display:flex; align-items:center; gap:10px; width:100%; margin-top:16px; padding:11px 14px; border:2px dashed #b9c4de; border-radius:12px; background:#fff; font-weight:800; text-align:left; color:var(--blue-700); }
+.safe .star{ font-size:1.5rem; filter:grayscale(1); opacity:.55; }
+.safe .st{ flex:1; min-width:0; }
+.safe[aria-pressed=true]{ border:2px solid var(--green-700); background:var(--pastel-green); color:var(--green-700); }
+.safe[aria-pressed=true] .star{ filter:none; opacity:1; }
+.safe.off{ opacity:.55; }
+.safe .ar{ color:inherit; }
+
+.mrow{ border:2px solid #e6e9f5; border-radius:12px; padding:10px; margin-bottom:10px; background:#fafbff; }
+.mlabel{ font-weight:800; margin-bottom:8px; overflow-wrap:anywhere; line-height:1.35; color:var(--blue-dark); }
+.mbtns{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:6px; }
+.mbtn{ min-height:46px; padding:6px 4px; border:2px solid #d9dff0; background:#fff; border-radius:10px; font-size:.92rem; font-weight:700; overflow-wrap:anywhere; line-height:1.2; color:var(--blue-700); }
+.mbtn .ar{ margin:2px 0 0; font-size:.95em; }
+.mbtn[aria-pressed=true]{ background:var(--blue-600); border-color:var(--blue-600); color:#fff; }
+.mbtn[aria-pressed=true] .ar{ color:#fff; }
+@media (max-width:560px){ .mbtns{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+/* Banco de respuestas (clasificar en cajas) */
+.bank-area{ background:#fdfdfd; background-image:radial-gradient(#cbd5e1 1px, transparent 1px); background-size:15px 15px;
+  padding:10px; border-radius:12px; min-height:64px; display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px; border:2px dashed #b0bec5; margin-bottom:.8rem; }
+.bank-area.over, .sort-box.over{ box-shadow:0 0 0 3px var(--orange) inset; }
+.bank-empty{ color:var(--green-700); font-weight:800; }
+.draggable-item{ background:#fff; border:1px solid #e0e0e0; color:#455a64; padding:8px 14px; border-radius:25px; cursor:pointer; font-weight:700; font-size:.92rem;
+  box-shadow:0 3px 5px rgba(0,0,0,.05); transition:all .2s; user-select:none; -webkit-user-select:none; text-align:center; max-width:100%; overflow-wrap:anywhere; }
+.draggable-item .ar{ margin:1px 0 0; font-size:.9em; }
+.draggable-item:hover{ background:#f8f9fa; transform:translateY(-2px); border-color:var(--blue-700); }
+.draggable-item.selected{ background:var(--orange); color:#fff; border-color:var(--orange); transform:translateY(-2px) scale(1.05); }
+.draggable-item.selected .ar{ color:#fff; }
+.sorting-area{ display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:.7rem; }
+@media (max-width:700px){ .sorting-area{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.sort-box{ border-radius:10px; padding:8px; display:flex; flex-direction:column; min-height:130px; border:2px solid; cursor:pointer; min-width:0; }
+.box-dig{ background:var(--pastel-orange); border-color:var(--orange); }
+.box-res{ background:var(--pastel-blue); border-color:var(--blue-600); }
+.box-cir{ background:var(--pastel-yellow); border-color:var(--yellow); }
+.box-exc{ background:var(--pastel-green); border-color:var(--green-700); }
+.sort-box-header{ font-weight:900; text-align:center; margin-bottom:6px; padding-bottom:4px; border-bottom:2px solid rgba(0,0,0,.08); font-size:.9rem; overflow-wrap:anywhere; }
+.box-dig .sort-box-header{ color:var(--orange-700); } .box-res .sort-box-header{ color:var(--blue-700); }
+.box-cir .sort-box-header{ color:var(--yellow-700); } .box-exc .sort-box-header{ color:var(--green-700); }
+.sort-box-header .ar{ color:inherit; font-size:.95em; }
+.sort-content{ flex:1; display:flex; flex-wrap:wrap; gap:6px; justify-content:center; align-content:flex-start; min-height:40px; }
+.sort-content .draggable-item{ background:rgba(255,255,255,.95); font-size:.84rem; padding:6px 10px; }
+.placed-count{ text-align:center; font-weight:800; color:var(--blue-700); margin:0 0 .6rem; }
+
+/* Navegación inferior */
+.navbar{ position:sticky; bottom:0; z-index:5; display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:0 -1.2rem -1.2rem; padding:10px 1.2rem calc(12px + env(safe-area-inset-bottom));
+  background:#fff; border-top:2px solid var(--panel); border-radius:0 0 16px 16px; }
+.navbar .btn{ min-width:0; }
+
+/* Superposiciones */
+.overlay{ position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1000; display:flex; align-items:flex-end; justify-content:center; }
+.sheet{ background:#fff; width:100%; max-width:820px; max-height:94vh; overflow:auto; border-radius:18px 18px 0 0; padding:16px 14px calc(18px + env(safe-area-inset-bottom)); box-shadow:0 -10px 30px rgba(0,0,0,.3); }
+@supports (height:1dvh){ .sheet{ max-height:94dvh; } }
+.sheet-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:8px; }
+.sheet-head h2{ color:var(--blue-dark); font-size:1.25rem; font-weight:900; overflow-wrap:anywhere; }
+.sheet-head .btn{ min-width:0; width:44px; padding:0; }
+.legend{ display:flex; flex-wrap:wrap; gap:8px 14px; margin:6px 0 12px; font-size:.88rem; color:var(--blue-700); font-weight:600; }
+.legend span{ display:inline-flex; align-items:center; gap:6px; }
+.legend .ar{ display:inline-block; margin:0; }
+.sw{ width:18px; height:18px; border-radius:6px; border:2px solid; display:inline-block; }
+.sw.none{ background:var(--panel); border-color:#b8bfe6; }
+.sw.done{ background:var(--blue-600); border-color:var(--blue-600); }
+.sw.sure{ background:var(--green); border-color:var(--green-700); }
+.sw.part{ background:var(--pastel-orange); border-color:var(--orange); border-style:dashed; }
+.sw.now{ background:#fff; border-color:var(--blue-dark); border-width:3px; }
+.msec{ margin:12px 0 6px; padding:8px 0 4px 10px; border-left:6px solid; }
+.msec.s-dig{ border-color:var(--orange); } .msec.s-res{ border-color:var(--blue-600); } .msec.s-cir{ border-color:var(--yellow); } .msec.s-exc{ border-color:var(--green-700); } .msec.s-rel, .msec.s-gen{ border-color:var(--blue-dark); }
+.mhead{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; font-weight:900; color:var(--blue-dark); margin-bottom:8px; }
+.mhead small{ color:var(--blue-700); font-weight:700; white-space:nowrap; }
+.chips{ display:grid; grid-template-columns:repeat(auto-fill,minmax(54px,1fr)); gap:8px; }
+.chip{ min-height:46px; border-radius:10px; border:2px solid #b8bfe6; background:var(--panel); font-weight:900; font-size:1.05rem; position:relative; padding:4px; color:var(--blue-700); }
+.chip.done{ background:var(--blue-600); border-color:var(--blue-600); color:#fff; }
+.chip.sure{ background:var(--green); border-color:var(--green-700); color:#fff; }
+.chip.part{ background:var(--pastel-orange); border:2px dashed var(--orange); color:var(--orange-700); }
+.chip.now{ outline:3px solid var(--blue-dark); outline-offset:1px; }
+.chip b{ font-size:.75rem; position:absolute; top:1px; right:4px; }
+.sumline{ font-weight:800; color:var(--blue-700); margin:6px 0 10px; line-height:1.5; }
+.sheet p{ color:var(--blue-dark); margin-bottom:8px; }
+.sheet .btn-wide{ margin-top:12px; display:flex; margin-left:auto; margin-right:auto; }
+.dlg-wrap{ align-items:center; padding:16px; z-index:1100; }
+.dialog{ background:#fff; border-radius:15px; max-width:420px; width:100%; padding:1.6rem 1.4rem; text-align:center; box-shadow:0 10px 30px rgba(0,0,0,.3); }
+.dialog h3{ color:var(--blue-dark); margin:0 0 8px; font-size:1.25rem; font-weight:900; }
+.dialog p{ margin:0 0 16px; line-height:1.5; color:var(--blue-700); }
+.dialog .row{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+.dialog .row .btn{ min-width:120px; }
+.toast{ position:fixed; left:50%; bottom:96px; transform:translateX(-50%); background:var(--blue-dark); color:#fff; padding:12px 18px; border-radius:12px; z-index:1200; max-width:90vw; text-align:center; font-weight:700; }
+.toast .ar{ color:#dfe7ff; text-align:center; }
+
+/* Final */
+.results{ display:flex; flex-direction:column; align-items:center; justify-content:center; flex:1; gap:.8rem; padding:1rem; text-align:center; }
+.status{ font-size:clamp(1.1rem,3.4vw,1.4rem); font-weight:800; color:var(--blue-700); line-height:1.5; }
+.spin{ width:38px; height:38px; border:5px solid var(--panel); border-top-color:var(--orange); border-radius:50%; margin:12px auto; animation:sp 1s linear infinite; }
+@keyframes sp{ to{ transform:rotate(360deg); } }
+.bigicon{ font-size:3.4rem; animation:bounce 1s ease infinite; }
+@keyframes bounce{ 0%,100%{transform:translateY(0) scale(1);} 50%{transform:translateY(-15px) scale(1.1);} }
+.credit{ font-size:.9rem; color:#999; margin-top:1rem; }
+.school-logo{ display:block; width:160px; max-width:28%; height:auto; margin-top:.8rem; border-radius:8px; object-fit:contain; }
+@media (max-width:899px){ .school-logo{ width:140px; max-width:160px; } }
+@media (max-width:420px){ .school-logo{ width:110px; max-width:40%; margin-top:.6rem; } .btn{ min-width:110px; padding:.6rem .9rem; } }
+</style>
+</head>
+<body>
+<noscript><p style="padding:20px;font-size:1.2rem;color:#fff">Este examen necesita JavaScript.</p></noscript>
+<div class="game-container">
+
+  <div class="top-left" id="topLeft" hidden>
+    <button type="button" id="btnMenu" class="btn btn-blue btn-sm"><span aria-hidden="true">☰</span> <span data-i18n="menu">Menú</span></button>
+  </div>
+  <div class="top-controls">
+    <button type="button" id="muteBtn" class="mute-btn" aria-label="Sonido" title="Sonido">
+      <svg class="on" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+      <svg class="off" viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 5 6M21 9l-5 6"/></svg>
+    </button>
+    <div class="lang-pill" role="group" aria-label="Idioma">
+      <button type="button" id="langEs" class="active-lang" data-lang="es" title="Español">🇪🇸</button>
+      <button type="button" id="langAr" data-lang="ar" title="Darija (دارجة)">🇲🇦</button>
+    </div>
+  </div>
+
+  <!-- ===== INICIO ===== -->
+  <section id="s-start" class="screen active">
+    <header>
+      <h1 data-i18n="title">Evaluación de Nutrición</h1>
+      <div class="subtitle" data-i18n="subtitle">4.º de Primaria · Los aparatos de la nutrición</div>
+    </header>
+    <div class="start-content">
+      <div class="advice-box" data-i18n="intro">Lee cada pregunta con <span class="highlight-keyword">calma</span>. Puedes ir y volver con las <span class="highlight-keyword">flechas</span> y usar el <span class="highlight-keyword">menú</span> para saltar a cualquier pregunta. Marca <span class="highlight-keyword">«Estoy seguro/a»</span> cuando lo estés de tu respuesta. Al terminar no verás la nota: tu maestro la revisará.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong></div>
+
+      <div id="resumeBox" class="resume" hidden>
+        <p id="resumeTxt"></p>
+        <div class="row">
+          <button type="button" id="btnResume" class="btn btn-blue" data-i18n="resume">Continuar</button>
+          <button type="button" id="btnNotMe" class="btn btn-ghost" data-i18n="notMe">No soy yo</button>
+        </div>
+      </div>
+
+      <form id="startForm" class="form" autocomplete="off" novalidate>
+        <label class="fl" for="ape" data-i18n="lblApe">Apellidos</label>
+        <input type="text" id="ape" maxlength="40" autocomplete="off" autocapitalize="words" spellcheck="false">
+        <label class="fl" for="nom" data-i18n="lblNom">Nombre</label>
+        <input type="text" id="nom" maxlength="40" autocomplete="off" autocapitalize="words" spellcheck="false">
+        <label class="fl" data-i18n="lblCurso">Curso</label>
+        <div class="cursos" id="cursos">
+          <button type="button" class="cbtn" data-curso="4.º A" aria-pressed="false">4.º A</button>
+          <button type="button" class="cbtn" data-curso="4.º B" aria-pressed="false">4.º B</button>
+        </div>
+        <p class="err" id="startErr" role="alert"></p>
+        <div style="text-align:center;margin-top:.4rem"><button type="submit" class="btn btn-primary" id="btnStart" data-i18n="start">Comenzar</button></div>
+      </form>
+      <img class="start-image" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Ni%C3%B1os.png" alt="" onerror="this.style.display='none'">
+    </div>
+  </section>
+
+  <!-- ===== EXAMEN ===== -->
+  <section id="s-exam" class="screen">
+    <header>
+      <h1 id="secName"></h1>
+      <div class="subtitle" id="qCount"></div>
+    </header>
+    <div class="game-info">
+      <div class="counter" id="counter"></div>
+      <div class="progress-bar" aria-hidden="true"><div class="progress-fill" id="barFill"></div></div>
+    </div>
+    <main class="qwrap" id="qWrap"></main>
+    <footer class="navbar">
+      <button type="button" id="btnPrev" class="btn btn-blue"><span aria-hidden="true">◀</span> <span data-i18n="prev">Anterior</span></button>
+      <button type="button" id="btnNext" class="btn btn-primary"><span id="nextTxt" data-i18n="next">Siguiente</span> <span aria-hidden="true" id="nextArrow">▶</span></button>
+    </footer>
+  </section>
+
+  <!-- ===== FIN ===== -->
+  <section id="s-end" class="screen">
+    <header><h1 data-i18n="endTitle">Evaluación de Nutrición</h1></header>
+    <div class="results">
+      <div id="endBody"></div>
+      <div class="credit">Creado por Manuel J. Ventura</div>
+      <img class="school-logo" src="https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Siurot.png" alt="Logo del colegio" onerror="this.style.display='none'">
+    </div>
+  </section>
+</div>
+
+<!-- ============ MENÚ ============ -->
+<div id="menu" class="overlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
+    <div class="sheet-head">
+      <h2 id="menuTitle" data-i18n="menuTitle">Menú de preguntas</h2>
+      <button type="button" class="btn btn-ghost" id="menuClose" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div id="menuBody"></div>
+    <button type="button" class="btn btn-primary btn-wide" id="menuReview" data-i18n="review">Revisar y entregar</button>
+  </div>
+</div>
+
+<!-- ============ REVISAR ============ -->
+<div id="review" class="overlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="revTitle">
+    <div class="sheet-head">
+      <h2 id="revTitle" data-i18n="revTitle">Revisar antes de entregar</h2>
+      <button type="button" class="btn btn-ghost" id="revClose" aria-label="Cerrar">✕</button>
+    </div>
+    <div id="revBody"></div>
+    <button type="button" class="btn btn-blue btn-wide" id="revKeep" data-i18n="keep">Seguir revisando</button>
+    <button type="button" class="btn btn-primary btn-wide" id="revSubmit" data-i18n="submit">Entregar examen</button>
+  </div>
+</div>
+
+<!-- ============ MODAL ============ -->
+<div id="modal" class="overlay dlg-wrap" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <h3 id="mTitle"></h3>
+    <p id="mText"></p>
+    <div class="row" id="mBtns"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* =====================  CONFIGURACIÓN  ===================== */
+var API_URL = 'https://script.google.com/a/macros/g.educaand.es/s/AKfycbydIr6Z0R7g5FlpW0nv565KfynZBP-OluuQXJua6yJkMuc1i9KsKWJmMMcHbSCawvHUKg/exec';
+var TIPO    = 'examen_nutricion_4';
+var LS_KEY  = 'siurot_examen_nutricion_4';
+var LS_LANG = 'siurot_examen_nutricion_4_lang';
+
+/* =====================  TEXTOS DE LA INTERFAZ  ===================== */
+var T = {
+  title:{es:'Evaluación de Nutrición', ar:'تقييم التغذية'},
+  subtitle:{es:'4.º de Primaria · Los aparatos de la nutrición', ar:'الرابع ابتدائي · أجهزة التغذية'},
+  intro:{es:'Lee cada pregunta con <span class="highlight-keyword">calma</span>. Puedes ir y volver con las <span class="highlight-keyword">flechas</span> y usar el <span class="highlight-keyword">menú</span> para saltar a cualquier pregunta. Marca <span class="highlight-keyword">«Estoy seguro/a»</span> cuando lo estés de tu respuesta. Al terminar no verás la nota: tu maestro la revisará.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong>',
+         ar:'قرا كل سؤال بتأنّي. تقدر تمشي وترجع بالسهمين وتستعمل القائمة باش تمشي لأي سؤال. حط علامة «أنا متأكد/ة» ملي تكون متأكد/ة من الجواب ديالك. ملي تسالي ما غاديش تشوف النقطة: الأستاذ هو اللي غادي يراجع الامتحان. بالتوفيق!', html:true},
+  lblApe:{es:'Apellidos', ar:'اللقب'},
+  lblNom:{es:'Nombre', ar:'الاسم'},
+  lblCurso:{es:'Curso', ar:'القسم'},
+  start:{es:'Comenzar', ar:'بدا'},
+  resume:{es:'Continuar', ar:'كمّل'},
+  notMe:{es:'No soy yo', ar:'ماشي أنا'},
+  menu:{es:'Menú', ar:'القائمة'},
+  prev:{es:'Anterior', ar:'السابق'},
+  next:{es:'Siguiente', ar:'التالي'},
+  review:{es:'Revisar y entregar', ar:'مراجعة وتسليم'},
+  menuTitle:{es:'Menú de preguntas', ar:'قائمة الأسئلة'},
+  revTitle:{es:'Revisar antes de entregar', ar:'مراجعة قبل التسليم'},
+  keep:{es:'Seguir revisando', ar:'كمّل المراجعة'},
+  submit:{es:'Entregar examen', ar:'سلّم الامتحان'},
+  endTitle:{es:'Evaluación de Nutrición', ar:'تقييم التغذية'}
+};
+var TX = {
+  q:{es:'Pregunta', ar:'السؤال'},
+  of:{es:'de', ar:'من'},
+  sure:{es:'Estoy seguro/a de mi respuesta', ar:'أنا متأكد/ة من الجواب ديالي'},
+  lgNone:{es:'Sin responder', ar:'بلا جواب'},
+  lgDone:{es:'Contestada', ar:'جاوبت'},
+  lgSure:{es:'Segura', ar:'متأكد/ة'},
+  lgPart:{es:'A medias', ar:'ناقصة'},
+  lgNow:{es:'Estás aquí', ar:'نتا هنا'},
+  answered:{es:'Contestadas', ar:'اللي جاوبت'},
+  missing:{es:'Te faltan estas preguntas:', ar:'باقي ليك هاد الأسئلة:'},
+  allDone:{es:'Has contestado todas las preguntas.', ar:'جاوبتي على جميع الأسئلة.'},
+  cTitle:{es:'¿Entregar el examen?', ar:'واش بغيتي تسلّم الامتحان؟'},
+  cText:{es:'Después no podrás cambiar tus respuestas.', ar:'من بعد ما غاديش تقدر تبدّل الأجوبة ديالك.'},
+  cTextMiss:{es:'Te faltan {n} preguntas por contestar. Después no podrás cambiar tus respuestas.', ar:'باقي ليك {n} ديال الأسئلة ما جاوبتيش عليهم. من بعد ما غاديش تقدر تبدّل الأجوبة.'},
+  yesSubmit:{es:'Sí, entregar', ar:'إيه، سلّم'},
+  back:{es:'Volver', ar:'رجع'},
+  sending:{es:'Enviando tu examen… No cierres esta página.', ar:'كنصيفطو الامتحان ديالك… ما تسدّش هاد الصفحة.'},
+  sent:{es:'¡Examen entregado! Gracias por tu esfuerzo.', ar:'تسلّم الامتحان! شكرا على المجهود ديالك.'},
+  sentSub:{es:'Ya puedes cerrar esta pestaña.', ar:'دابا تقدر تسد هاد الصفحة.'},
+  sendErr:{es:'Todavía no se ha podido enviar. No cierres la página: seguimos intentándolo.', ar:'باقي ما قدرناش نصيفطو الامتحان. ما تسدّش الصفحة: غادي نعاودو المحاولة.'},
+  retry:{es:'Reintentar ahora', ar:'عاود دابا'},
+  resumeTxt:{es:'Hay un examen sin terminar de {name} ({curso}).', ar:'كاين واحد الامتحان ما كمّلوش {name} ({curso}).'},
+  dTitle:{es:'¿Empezar un examen nuevo?', ar:'واش بغيتي تبدا امتحان جديد؟'},
+  dText:{es:'Se borrarán las respuestas del examen sin terminar de {name}.', ar:'غادي تتمسح الأجوبة ديال الامتحان اللي ما كمّلوش {name}.'},
+  yesNew:{es:'Sí, empezar de nuevo', ar:'إيه، بدا من جديد'},
+  errNames:{es:'Escribe tus apellidos y tu nombre (solo letras).', ar:'كتب اللقب والاسم ديالك (غير الحروف).'},
+  errCurso:{es:'Elige tu curso.', ar:'اختار القسم ديالك.'},
+  toastFirst:{es:'Primero elige una respuesta.', ar:'اختار جواب لولا.'},
+  rowHint:{es:'Elige un aparato en cada fila.', ar:'اختار جهاز واحد ف كل سطر.'},
+  bankHint:{es:'Arrastra cada órgano a su aparato, o toca el órgano y después el aparato. Si te equivocas, toca el órgano para devolverlo arriba.',
+            ar:'جرّ كل عضو للجهاز ديالو، ولا كليكي على العضو وبعدها كليكي على الجهاز. إلا غلطتي، كليكي على العضو باش يرجع للفوق.'},
+  placed:{es:'Colocados', ar:'اللي تحطو'},
+  allPlaced:{es:'✔ Todos los órganos están colocados', ar:'✔ جميع الأعضاء تحطّو'}
+};
+
+/* =====================  DATOS DEL EXAMEN (sin claves)  ===================== */
+var LETTERS = ['A','B','C','D'];
+var SECTIONS = [
+  {id:'dig', es:'Aparato digestivo',    ar:'الجهاز الهضمي',   ico:'🍎'},
+  {id:'res', es:'Aparato respiratorio', ar:'الجهاز التنفسي',   ico:'🌬️'},
+  {id:'cir', es:'Aparato circulatorio', ar:'الجهاز الدوراني',  ico:'❤️'},
+  {id:'exc', es:'Aparato excretor',     ar:'الجهاز الإخراجي',  ico:'💧'},
+  {id:'rel', es:'Relacionar aparatos',  ar:'ربط الأجهزة',      ico:'🧩', fixed:true}
+];
+var APAR = [
+  {id:'dig', es:'Digestivo',    ar:'الهضمي'},
+  {id:'res', es:'Respiratorio', ar:'التنفسي'},
+  {id:'cir', es:'Circulatorio', ar:'الدوراني'},
+  {id:'exc', es:'Excretor',     ar:'الإخراجي'}
+];
+
+var Q = [
+/* ---------- DIGESTIVO ---------- */
+{id:'D1',sec:'dig',type:'single',
+ es:'¿En cuál de las siguientes opciones hay un intruso que no pertenece al aparato digestivo?',
+ ar:'فأي اختيار كاين شي عضو دخيل ماشي من الجهاز الهضمي؟',
+ opts:[
+  {es:'Intestino grueso, boca, hígado.',ar:'الأمعاء الغليظة، الفم، الكبد.'},
+  {es:'Estómago, esófago, páncreas.',ar:'المعدة، المريء، البنكرياس.'},
+  {es:'Laringe, intestino delgado, ano.',ar:'الحنجرة، الأمعاء الدقيقة، الشرج.'},
+  {es:'No hay ningún intruso en las tres respuestas anteriores.',ar:'ما كاين حتى دخيل ف الأجوبة التلاتة اللي قبل.'}]},
+{id:'D2',sec:'dig',type:'single',
+ es:'En el estómago...', ar:'ف المعدة...',
+ opts:[
+  {es:'El bolo alimenticio se mezcla con los jugos gástricos y se forma una papilla.',ar:'لقمة الطعام كتتخلط مع العصارات المعدية وكتولّي عجينة.'},
+  {es:'Se absorben los nutrientes y pasan a la sangre.',ar:'المواد المغذية كتتمتّص وكتدوز للدم.'},
+  {es:'Las dos primeras opciones son correctas.',ar:'الاختيارين الأولين صحاح.'},
+  {es:'Las dos primeras opciones son falsas.',ar:'الاختيارين الأولين غالطين.'}]},
+{id:'D3',sec:'dig',type:'single',
+ es:'En el intestino delgado...', ar:'ف الأمعاء الدقيقة...',
+ opts:[
+  {es:'Se vierten el jugo pancreático y la bilis.',ar:'كيتصبّو فيها العصارة البنكرياسية والصفراء.'},
+  {es:'Se absorben los nutrientes y pasan a la sangre.',ar:'المواد المغذية كتتمتّص وكتدوز للدم.'},
+  {es:'Se envían los desechos al intestino grueso.',ar:'الفضلات كتتصيفط للأمعاء الغليظة.'},
+  {es:'Todas las respuestas son correctas.',ar:'الأجوبة كاملين صحاح.'}]},
+{id:'D4',sec:'dig',type:'single',
+ es:'Las glándulas que intervienen en el aparato digestivo son:', ar:'الغدد اللي كيتدخلو ف الجهاز الهضمي هوما:',
+ opts:[
+  {es:'La boca, los dientes y la lengua.',ar:'الفم، الأسنان واللسان.'},
+  {es:'La bilis, el jugo pancreático y la saliva.',ar:'الصفراء، العصارة البنكرياسية واللعاب.'},
+  {es:'Las glándulas salivales, el hígado y el páncreas.',ar:'الغدد اللعابية، الكبد والبنكرياس.'},
+  {es:'Las lágrimas, la saliva y los riñones.',ar:'الدموع، اللعاب والكلاوي.'}]},
+{id:'D5',sec:'dig',type:'single',
+ es:'¿En qué parte del tubo digestivo se forman las heces?', ar:'فين كتتكوّن الفضلات ف الأنبوب الهضمي؟',
+ opts:[
+  {es:'En el intestino grueso.',ar:'ف الأمعاء الغليظة.'},
+  {es:'En el intestino delgado.',ar:'ف الأمعاء الدقيقة.'},
+  {es:'En el estómago.',ar:'ف المعدة.'},
+  {es:'En el ano.',ar:'ف الشرج.'}]},
+{id:'D6',sec:'dig',type:'single',
+ es:'El esófago...', ar:'المريء...',
+ opts:[
+  {es:'Conecta la laringe con el estómago.',ar:'كيربط الحنجرة بالمعدة.'},
+  {es:'Conecta el estómago con los intestinos.',ar:'كيربط المعدة بالأمعاء.'},
+  {es:'Conecta la faringe y la laringe.',ar:'كيربط البلعوم والحنجرة.'},
+  {es:'Conecta la faringe y el estómago.',ar:'كيربط البلعوم بالمعدة.'}]},
+/* ---------- RESPIRATORIO ---------- */
+{id:'R1',sec:'res',type:'single',
+ es:'En la respiración...', ar:'ف التنفس...',
+ opts:[
+  {es:'Obtenemos el oxígeno que necesitamos.',ar:'كناخدو الأوكسجين اللي محتاجين ليه.'},
+  {es:'Expulsamos al exterior el dióxido de carbono.',ar:'كنخرجو ثاني أكسيد الكربون للخارج.'},
+  {es:'Intervienen las vías respiratorias y los pulmones.',ar:'كيتدخلو فيه المسالك الهوائية والرئتين.'},
+  {es:'Las tres opciones son correctas.',ar:'الاختيارات التلاتة صحاح.'}]},
+{id:'R2',sec:'res',type:'single',
+ es:'¿En cuál de las siguientes opciones están bien ordenadas las vías respiratorias?', ar:'ف أي اختيار المسالك الهوائية مرتّبين مزيان؟',
+ opts:[
+  {es:'Fosas nasales, faringe, laringe, bronquios y tráquea.',ar:'فتحات الأنف، البلعوم، الحنجرة، الشعب الهوائية والقصبة الهوائية.'},
+  {es:'Fosas nasales, laringe, faringe, tráquea y bronquios.',ar:'فتحات الأنف، الحنجرة، البلعوم، القصبة الهوائية والشعب الهوائية.'},
+  {es:'Fosas nasales, faringe, laringe, tráquea y bronquios.',ar:'فتحات الأنف، البلعوم، الحنجرة، القصبة الهوائية والشعب الهوائية.'},
+  {es:'Fosas nasales, faringe, laringe, esófago y bronquios.',ar:'فتحات الأنف، البلعوم، الحنجرة، المريء والشعب الهوائية.'}]},
+{id:'R3',sec:'res',type:'single',
+ es:'¿En qué tubos se divide la tráquea?', ar:'القصبة الهوائية كتتقسم ل أشمن أنابيب؟',
+ opts:[
+  {es:'En los alvéolos.',ar:'ل الحويصلات الهوائية.'},
+  {es:'En los dos pulmones.',ar:'ل الرئتين.'},
+  {es:'En la faringe y la laringe.',ar:'ل البلعوم والحنجرة.'},
+  {es:'En los bronquios.',ar:'ل الشعب الهوائية.'}]},
+{id:'R4',sec:'res',type:'single',
+ es:'La laringe...', ar:'الحنجرة...',
+ opts:[
+  {es:'Impide que los alimentos entren en las vías respiratorias.',ar:'كتمنع الماكلة تدخل للمسالك الهوائية.'},
+  {es:'Está situada entre la faringe y la tráquea.',ar:'كاينة بين البلعوم والقصبة الهوائية.'},
+  {es:'Las dos primeras opciones son correctas.',ar:'الاختيارين الأولين صحاح.'},
+  {es:'Las dos primeras opciones son falsas.',ar:'الاختيارين الأولين غالطين.'}]},
+{id:'R5',sec:'res',type:'single',
+ es:'En la inspiración...', ar:'ف الشهيق...',
+ opts:[
+  {es:'El aire entra hasta los pulmones.',ar:'الهواء كيوصل حتى للرئتين.'},
+  {es:'Expulsamos el oxígeno del cuerpo.',ar:'كنخرجو الأوكسجين من الجسم.'},
+  {es:'El dióxido de carbono entra por las fosas nasales.',ar:'ثاني أكسيد الكربون كيدخل من فتحات الأنف.'},
+  {es:'Todas las respuestas son correctas.',ar:'الأجوبة كاملين صحاح.'}]},
+{id:'R6',sec:'res',type:'single',
+ es:'En el intercambio de gases...', ar:'ف تبادل الغازات...',
+ opts:[
+  {es:'El dióxido de carbono del aire pasa a la sangre y el oxígeno de la sangre pasa al aire.',ar:'ثاني أكسيد الكربون ديال الهواء كيدوز للدم والأوكسجين ديال الدم كيدوز للهواء.'},
+  {es:'El oxígeno del aire pasa a la sangre y el dióxido de carbono de la sangre pasa al aire.',ar:'الأوكسجين ديال الهواء كيدوز للدم وثاني أكسيد الكربون ديال الدم كيدوز للهواء.'},
+  {es:'El oxígeno de la sangre pasa al aire y el dióxido de carbono del aire pasa a la sangre.',ar:'الأوكسجين ديال الدم كيدوز للهواء وثاني أكسيد الكربون ديال الهواء كيدوز للدم.'},
+  {es:'El oxígeno del aire pasa a la sangre y la sangre del aire pasa a los pulmones.',ar:'الأوكسجين ديال الهواء كيدوز للدم والدم ديال الهواء كيدوز للرئتين.'}]},
+{id:'R7',sec:'res',type:'single',
+ es:'En la espiración...', ar:'ف الزفير...',
+ opts:[
+  {es:'El diafragma se contrae y los pulmones se hinchan.',ar:'الحجاب الحاجز كيتقلّص والرئتين كيتنفخو.'},
+  {es:'Expulsamos el dióxido de carbono.',ar:'كنخرجو ثاني أكسيد الكربون.'},
+  {es:'El aire recorre las vías respiratorias desde las fosas nasales hasta los pulmones.',ar:'الهواء كيدوز من المسالك الهوائية من فتحات الأنف حتى للرئتين.'},
+  {es:'Todas son correctas.',ar:'كاملين صحاح.'}]},
+/* ---------- CIRCULATORIO ---------- */
+{id:'C1',sec:'cir',type:'single',
+ es:'El aparato circulatorio...', ar:'الجهاز الدوراني...',
+ opts:[
+  {es:'Transporta nutrientes y desechos a través de la sangre.',ar:'كينقل المواد المغذية والفضلات عبر الدم.'},
+  {es:'Está formado por el corazón, los pulmones y los vasos sanguíneos.',ar:'كيتكوّن من القلب والرئتين والأوعية الدموية.'},
+  {es:'Las dos primeras opciones son correctas.',ar:'الاختيارين الأولين صحاح.'},
+  {es:'Las dos primeras opciones son falsas.',ar:'الاختيارين الأولين غالطين.'}]},
+{id:'C2',sec:'cir',type:'single',
+ es:'El aparato circulatorio está formado por...', ar:'الجهاز الدوراني كيتكوّن من...',
+ opts:[
+  {es:'La sangre, el corazón y las venas.',ar:'الدم، القلب والأوردة.'},
+  {es:'El corazón, las arterias, las venas y los capilares.',ar:'القلب، الشرايين، الأوردة والشعيرات الدموية.'},
+  {es:'Los vasos sanguíneos, el corazón y la sangre.',ar:'الأوعية الدموية، القلب والدم.'},
+  {es:'La sangre, las venas, las arterias y el corazón.',ar:'الدم، الأوردة، الشرايين والقلب.'}]},
+{id:'C3',sec:'cir',type:'single',
+ es:'Los capilares...', ar:'الشعيرات الدموية...',
+ opts:[
+  {es:'Son vasos muy finos que conectan las venas y las arterias.',ar:'أوعية رقيقة بزاف كتربط الأوردة بالشرايين.'},
+  {es:'Llevan sangre desde el corazón hasta los órganos.',ar:'كيوصّلو الدم من القلب حتى للأعضاء.'},
+  {es:'Llevan la sangre desde los órganos hasta el corazón.',ar:'كيرجعو الدم من الأعضاء حتى للقلب.'},
+  {es:'Las tres opciones son falsas.',ar:'الاختيارات التلاتة غالطين.'}]},
+/* ---------- EXCRETOR ---------- */
+{id:'E1',sec:'exc',type:'single',
+ es:'La excreción...', ar:'الإخراج...',
+ opts:[
+  {es:'Consiste en recoger los desechos del cuerpo.',ar:'كيتمثّل ف جمع الفضلات ديال الجسم.'},
+  {es:'Consiste en eliminar los desechos de la sangre.',ar:'كيتمثّل ف إزالة الفضلات من الدم.'},
+  {es:'Las dos opciones son correctas.',ar:'الاختيارين صحاح.'},
+  {es:'Las dos opciones son falsas.',ar:'الاختيارين غالطين.'}]},
+{id:'E2',sec:'exc',type:'single',
+ es:'Los riñones...', ar:'الكلاوي...',
+ opts:[
+  {es:'Filtran la sangre para eliminar las sustancias de desecho.',ar:'كيصفّيو الدم باش يزيلو الفضلات.'},
+  {es:'Son los responsables de formar la orina.',ar:'هوما المسؤولين على تكوين البول.'},
+  {es:'Envían la orina a los uréteres.',ar:'كيصيفطو البول للحالبين.'},
+  {es:'Todas las opciones son correctas.',ar:'الاختيارات كاملين صحاح.'}]},
+{id:'E3',sec:'exc',type:'single',
+ es:'Los uréteres...', ar:'الحالبان...',
+ opts:[
+  {es:'Son el lugar donde se almacena la orina antes de ser expulsada por la uretra.',ar:'هوما المكان اللي كيتخزّن فيه البول قبل ما يخرج من مجرى البول.'},
+  {es:'Limpian los desechos que hay en la sangre.',ar:'كيصفّيو الفضلات اللي ف الدم.'},
+  {es:'Conectan los riñones con la vejiga.',ar:'كيربطو الكلاوي بالمثانة.'},
+  {es:'Las tres opciones son correctas.',ar:'الاختيارات التلاتة صحاح.'}]},
+{id:'E4',sec:'exc',type:'single',
+ es:'La uretra...', ar:'مجرى البول...',
+ opts:[
+  {es:'Es el lugar donde se almacena la orina.',ar:'هو المكان اللي كيتخزّن فيه البول.'},
+  {es:'Conecta los uréteres con la vejiga.',ar:'كيربط الحالبين بالمثانة.'},
+  {es:'Elimina las sustancias de desecho de la sangre.',ar:'كيزيل الفضلات من الدم.'},
+  {es:'Es el conducto de salida de la orina.',ar:'هو القناة اللي كيخرج منها البول.'}]},
+/* ---------- RELACIONAR ---------- */
+{id:'X1',sec:'rel',type:'matrix',
+ es:'Relaciona los aparatos de la nutrición:', ar:'ربط الأجهزة ديال التغذية:',
+ rows:[
+  {id:'f1',es:'Obtiene oxígeno del aire',ar:'كياخد الأوكسجين من الهواء'},
+  {id:'f2',es:'Transporta la sangre por el cuerpo',ar:'كينقل الدم ف الجسم'},
+  {id:'f3',es:'Limpia la sangre y forma la orina',ar:'كيصفّي الدم وكيكوّن البول'},
+  {id:'f4',es:'Recoge desechos del cuerpo',ar:'كيجمع الفضلات ديال الجسم'},
+  {id:'f5',es:'Obtiene nutrientes de los alimentos',ar:'كياخد المواد المغذية من الماكلة'}]},
+{id:'X2',sec:'rel',type:'bank',
+ es:'Clasifica cada órgano en el aparato al que pertenece:', ar:'صنّف كل عضو ف الجهاز اللي كينتمي ليه:',
+ rows:[
+  {id:'o1',es:'Boca',ar:'الفم'},{id:'o2',es:'Esófago',ar:'المريء'},{id:'o3',es:'Hígado',ar:'الكبد'},
+  {id:'o4',es:'Estómago',ar:'المعدة'},{id:'o5',es:'Páncreas',ar:'البنكرياس'},{id:'o6',es:'Intestino',ar:'الأمعاء'},
+  {id:'o7',es:'Ano',ar:'الشرج'},
+  {id:'o9',es:'Tráquea',ar:'القصبة الهوائية'},
+  {id:'o10',es:'Bronquios',ar:'الشعب الهوائية'},{id:'o11',es:'Pulmones',ar:'الرئتان'},
+  {id:'o18',es:'Diafragma',ar:'الحجاب الحاجز'},{id:'o19',es:'Laringe',ar:'الحنجرة'},
+  {id:'o12',es:'Corazón',ar:'القلب'},{id:'o13',es:'Vasos sanguíneos',ar:'الأوعية الدموية'},{id:'o20',es:'Sangre',ar:'الدم'},
+  {id:'o14',es:'Riñones',ar:'الكلاوي'},{id:'o15',es:'Uréteres',ar:'الحالبان'},
+  {id:'o16',es:'Vejiga',ar:'المثانة'},{id:'o17',es:'Uretra',ar:'مجرى البول'}]}
+];
+
+
+var QMAP = {}; Q.forEach(function(q){ QMAP[q.id]=q; });
+var SMAP = {}; SECTIONS.forEach(function(s){ SMAP[s.id]=s; });
+var APMAP = {}; APAR.forEach(function(a){ APMAP[a.id]=a; });
+var TOTAL = Q.length;
+var APICO = {dig:'🍎', res:'🌬️', cir:'❤️', exc:'💧'};
+
+/* =====================  UTILIDADES  ===================== */
+var $ = function(id){ return document.getElementById(id); };
+var esc = function(s){ return String(s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+var sleep = function(ms){ return new Promise(function(r){ setTimeout(r,ms); }); };
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function uid(){ try{ if(window.crypto&&crypto.randomUUID) return crypto.randomUUID(); }catch(e){} return 'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,10)+Math.random().toString(36).slice(2,10); }
+
+var lang = 'es';
+try{ if(localStorage.getItem(LS_LANG)==='ar') lang='ar'; }catch(e){}
+function bi(es,ar){ return esc(es) + (lang==='ar' && ar ? '<span class="ar" dir="rtl" lang="ar">'+esc(ar)+'</span>' : ''); }
+function bit(t,params){
+  var es=t.es, ar=t.ar;
+  if(params){ for(var k in params){ es=es.split('{'+k+'}').join(params[k]); ar=ar.split('{'+k+'}').join(params[k]); } }
+  return bi(es,ar);
+}
+function plain(t){ return t.es; }
+
+
+/* =====================  SONIDO (tap)  ===================== */
+var TAP_URL='https://raw.githubusercontent.com/ManuelVS8/Efectos_audio/refs/heads/main/Tap.mp3';
+var LS_MUTE='siurot_examen_nutricion_4_mute';
+var muted=false; try{ muted=localStorage.getItem(LS_MUTE)==='1'; }catch(e){}
+var tapAudio=null, audioUnlocked=false;
+try{ tapAudio=new Audio(); tapAudio.src=TAP_URL; tapAudio.preload='auto'; }catch(e){}
+function unlockAudio(){
+  if(audioUnlocked) return; audioUnlocked=true;
+  try{ var C=window.AudioContext||window.webkitAudioContext; if(C){ var c=new C(); if(c.state==='suspended') c.resume();
+    var b=c.createBuffer(1,1,22050), sr=c.createBufferSource(); sr.buffer=b; sr.connect(c.destination); sr.start(0); } }catch(e){}
+}
+function playTap(){
+  if(muted||!tapAudio) return; unlockAudio();
+  try{ var c=tapAudio.cloneNode(true); var pr=c.play(); if(pr&&pr.catch) pr.catch(function(){}); }
+  catch(e){ try{ tapAudio.currentTime=0; tapAudio.play(); }catch(x){} }
+}
+function paintMute(){ $('muteBtn').classList.toggle('muted',muted); $('muteBtn').setAttribute('aria-pressed',muted?'true':'false'); }
+$('muteBtn').addEventListener('click', function(){ muted=!muted; try{ localStorage.setItem(LS_MUTE,muted?'1':'0'); }catch(e){} paintMute(); if(!muted) playTap(); });
+paintMute();
+/* un «tap» en cualquier interacción (botones, opciones, órganos, cajas, casillas del menú) */
+document.addEventListener('click', function(e){
+  if(e.target.closest('#muteBtn')) return;
+  if(e.target.closest('button, .draggable-item, .sort-box')) playTap();
+}, true);
+
+/* =====================  ESTADO  ===================== */
+var S = null;
+var phase = 'start';     // start | exam | end
+var depth = 0;           // 0 inicio, 1 examen, 2 menú/revisión
+var overlayOpen = false;
+var selCurso = '';
+var selOrgan = null;     // órgano seleccionado (tap-tap)
+var dragOrgan = null;    // órgano que se está arrastrando
+
+function save(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(S)); }catch(e){} }
+function loadSaved(){
+  try{
+    var r = localStorage.getItem(LS_KEY); if(!r) return null;
+    var s = JSON.parse(r);
+    if(!s || !Array.isArray(s.order) || s.order.length!==TOTAL) return null;
+    for(var i=0;i<s.order.length;i++){ if(!QMAP[s.order[i]]) return null; }
+    s.answers = s.answers||{}; s.safe = s.safe||{}; s.rowOrder = s.rowOrder||{};
+    if(typeof s.cur!=='number' || s.cur<0 || s.cur>=TOTAL) s.cur=0;
+    return s;
+  }catch(e){ return null; }
+}
+function clearSaved(){ try{ localStorage.removeItem(LS_KEY); }catch(e){} }
+
+function newAttempt(ape,nom,curso){
+  var order=[];
+  SECTIONS.forEach(function(sec){
+    var ids = Q.filter(function(q){ return q.sec===sec.id; }).map(function(q){ return q.id; });
+    order = order.concat(sec.fixed ? ids : shuffle(ids));
+  });
+  var rowOrder={};
+  Q.forEach(function(q){ if(q.rows) rowOrder[q.id]=shuffle(q.rows.map(function(r){ return r.id; })); });
+  return {attemptId:uid(), apellidos:ape, nombre:nom, curso:curso, order:order, rowOrder:rowOrder,
+          answers:{}, safe:{}, cur:0, t0:Date.now(), tEnd:0, leaves:0, submitted:false, sent:false};
+}
+
+function started(q){
+  var a=S.answers[q.id];
+  if(q.type==='single') return a!==undefined;
+  return !!a && Object.keys(a).length>0;
+}
+function complete(q){
+  var a=S.answers[q.id];
+  if(q.type==='single') return a!==undefined;
+  return !!a && Object.keys(a).length===q.rows.length;
+}
+function status(q){
+  if(!started(q)) return 'none';
+  if(S.safe[q.id]) return 'sure';
+  return complete(q) ? 'done' : 'part';
+}
+function countComplete(){ var n=0; Q.forEach(function(q){ if(complete(q)) n++; }); return n; }
+
+/* =====================  PANTALLAS E HISTORIAL  ===================== */
+function show(id){
+  ['s-start','s-exam','s-end'].forEach(function(s){ $(s).classList.toggle('active', s===id); });
+  $('topLeft').hidden = (id!=='s-exam');
+  window.scrollTo(0,0);
+}
+function pushDepth(d){ try{ history.pushState({d:d},''); }catch(e){} depth=d; }
+try{ history.replaceState({d:0},''); }catch(e){}
+
+function closeOverlaysUI(){ $('menu').hidden=true; $('review').hidden=true; overlayOpen=false; }
+function closeOverlay(){
+  closeOverlaysUI();
+  if(depth===2){ depth=1; try{ history.back(); }catch(e){} }
+  if(phase==='exam') renderQuestion(true);
+}
+function openMenu(){ if(overlayOpen) return; renderMenu(); $('menu').hidden=false; overlayOpen=true; pushDepth(2); }
+function openReview(){
+  var was=overlayOpen;
+  closeOverlaysUI();
+  renderReview(); $('review').hidden=false; overlayOpen=true;
+  if(!was) pushDepth(2);
+}
+
+window.addEventListener('popstate', function(e){
+  var d = (e.state && typeof e.state.d==='number') ? e.state.d : 0;
+  if(phase==='end'){ try{ history.pushState({d:1},''); }catch(x){} depth=1; return; }
+  if(depth===2 && d<2 && overlayOpen){ closeOverlaysUI(); depth=d; if(phase==='exam') renderQuestion(true); return; }
+  if(phase==='exam' && d===0){ depth=0; leaveToStart(); return; }
+  depth=d;
+});
+
+function leaveToStart(){
+  phase='start'; closeOverlaysUI(); hideModal(); selOrgan=null;
+  show('s-start'); refreshResumeBox();
+}
+
+/* =====================  MODAL / AVISO  ===================== */
+function showModal(title, text, buttons){
+  $('mTitle').innerHTML = title; $('mText').innerHTML = text;
+  var box=$('mBtns'); box.innerHTML='';
+  buttons.forEach(function(b){
+    var el=document.createElement('button'); el.type='button'; el.className='btn '+(b.cls||'btn-ghost'); el.innerHTML=b.label;
+    el.addEventListener('click', function(){ hideModal(); if(b.fn) b.fn(); });
+    box.appendChild(el);
+  });
+  $('modal').hidden=false;
+  var f=box.querySelector('button'); if(f) f.focus();
+}
+function hideModal(){ $('modal').hidden=true; }
+var toastTimer=null;
+function toast(t){
+  var el=document.getElementById('toastEl');
+  if(!el){ el=document.createElement('div'); el.id='toastEl'; el.className='toast'; el.setAttribute('role','status'); document.body.appendChild(el); }
+  el.innerHTML=bit(t); el.hidden=false;
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){ el.hidden=true; },2600);
+}
+
+/* =====================  IDIOMA  ===================== */
+function applyLang(){
+  document.documentElement.classList.toggle('ar-on', lang==='ar');
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var t=T[el.getAttribute('data-i18n')]; if(!t) return;
+    if(t.html){ el.innerHTML = t.es + (lang==='ar' ? '<span class="ar" dir="rtl" lang="ar">'+esc(t.ar)+'</span>' : ''); }
+    else el.innerHTML = bi(t.es,t.ar);
+  });
+  $('langEs').classList.toggle('active-lang', lang==='es');
+  $('langAr').classList.toggle('active-lang', lang==='ar');
+  refreshResumeBox();
+  if(phase==='exam' && S){ renderQuestion(true); }
+  if(!$('menu').hidden) renderMenu();
+  if(!$('review').hidden) renderReview();
+  if(phase==='end') renderEnd();
+}
+function setLang(l){
+  if(l===lang) return; lang=l;
+  try{ localStorage.setItem(LS_LANG, lang); }catch(e){}
+  applyLang();
+}
+$('langEs').addEventListener('click', function(){ setLang('es'); });
+$('langAr').addEventListener('click', function(){ setLang('ar'); });
+
+/* =====================  INICIO  ===================== */
+var NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M}' .\-]{0,39}$/u;
+function cleanName(s){ return String(s||'').replace(/\s+/g,' ').trim(); }
+
+function refreshResumeBox(){
+  var box=$('resumeBox');
+  var sv = loadSaved();
+  if(sv && !sv.submitted && phase==='start'){
+    var name = sv.nombre+' '+sv.apellidos;
+    $('resumeTxt').innerHTML = bit(TX.resumeTxt,{name:esc(name),curso:esc(sv.curso)});
+    box.hidden=false;
+  } else { box.hidden=true; }
+}
+
+$('cursos').addEventListener('click', function(e){
+  var b=e.target.closest('.cbtn'); if(!b) return;
+  selCurso=b.getAttribute('data-curso');
+  document.querySelectorAll('.cbtn').forEach(function(x){ x.setAttribute('aria-pressed', x===b?'true':'false'); });
+});
+
+$('startForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  var ape=cleanName($('ape').value), nom=cleanName($('nom').value);
+  var err=$('startErr');
+  if(!NAME_RE.test(ape) || !NAME_RE.test(nom)){ err.innerHTML=bit(TX.errNames); return; }
+  if(!selCurso){ err.innerHTML=bit(TX.errCurso); return; }
+  err.textContent='';
+  var go=function(){ S=newAttempt(ape,nom,selCurso); save(); beginExam(); };
+  var sv=loadSaved();
+  if(sv && !sv.submitted){
+    showModal(bit(TX.dTitle), bit(TX.dText,{name:esc(sv.nombre+' '+sv.apellidos)}), [
+      {label:bit(TX.back), cls:'btn-ghost', fn:null},
+      {label:bit(TX.yesNew), cls:'btn-danger', fn:go}
+    ]);
+  } else go();
+});
+
+$('btnResume').addEventListener('click', function(){
+  var sv=loadSaved(); if(!sv) return; S=sv; beginExam();
+});
+$('btnNotMe').addEventListener('click', function(){
+  var sv=loadSaved(); if(!sv){ refreshResumeBox(); return; }
+  showModal(bit(TX.dTitle), bit(TX.dText,{name:esc(sv.nombre+' '+sv.apellidos)}), [
+    {label:bit(TX.back), cls:'btn-ghost', fn:null},
+    {label:bit(TX.yesNew), cls:'btn-danger', fn:function(){ clearSaved(); S=null; refreshResumeBox(); }}
+  ]);
+});
+
+function beginExam(){
+  phase='exam'; selOrgan=null; pushDepth(1);
+  show('s-exam'); renderQuestion(true);
+}
+
+/* =====================  RENDER DE PREGUNTAS  ===================== */
+function curQ(){ return QMAP[S.order[S.cur]]; }
+
+function renderQuestion(scrollTop){
+  if(!S) return;
+  var q=curQ(), sec=SMAP[q.sec];
+  var focusKey=null, ae=document.activeElement;
+  if(ae && $('qWrap').contains(ae) && ae.getAttribute('data-fk')) focusKey=ae.getAttribute('data-fk');
+  var y = window.scrollY;
+
+  $('secName').innerHTML = bi(sec.ico+' '+sec.es, sec.ar);
+  $('qCount').innerHTML = bi(TX.q.es+' '+(S.cur+1)+' '+TX.of.es+' '+TOTAL, TX.q.ar+' '+(S.cur+1)+' '+TX.of.ar+' '+TOTAL);
+  var done=countComplete();
+  $('counter').textContent = '✔ '+done+'/'+TOTAL;
+  $('barFill').style.width = (done/TOTAL*100)+'%';
+
+  var h='<article class="qcard"><h2 class="qtext">'+bi(q.es,q.ar)+'</h2>';
+  var ans=S.answers[q.id];
+  if(q.type==='single'){
+    h+='<div class="opts" role="radiogroup">';
+    q.opts.forEach(function(o,i){
+      var sel=(ans===i);
+      h+='<button type="button" class="opt'+(sel?' sel':'')+'" data-i="'+i+'" data-fk="o'+i+'" role="radio" aria-checked="'+sel+'">'+
+         '<span class="badge">'+LETTERS[i]+'</span><span class="otext">'+bi(o.es,o.ar)+'</span></button>';
+    });
+    h+='</div>';
+  } else if(q.type==='matrix'){
+    h+='<p class="hint">'+bit(TX.rowHint)+'</p>';
+    var a=ans||{};
+    S.rowOrder[q.id].forEach(function(rid){
+      var row=q.rows.filter(function(r){ return r.id===rid; })[0];
+      h+='<div class="mrow"><div class="mlabel">'+bi(row.es,row.ar)+'</div><div class="mbtns">';
+      APAR.forEach(function(ap){
+        var on = a[rid]===ap.id;
+        h+='<button type="button" class="mbtn" data-row="'+rid+'" data-ap="'+ap.id+'" data-fk="'+rid+ap.id+'" aria-pressed="'+on+'">'+bi(ap.es,ap.ar)+'</button>';
+      });
+      h+='</div></div>';
+    });
+  } else { /* bank: banco de órganos + 4 cajas */
+    var b=ans||{}, order=S.rowOrder[q.id], placed=Object.keys(b).length;
+    var rowOf=function(id){ return q.rows.filter(function(r){ return r.id===id; })[0]; };
+    var chip=function(r){ return '<div class="draggable-item'+(selOrgan===r.id?' selected':'')+'" role="button" tabindex="0" draggable="true" data-oid="'+r.id+'" data-fk="'+r.id+'">'+bi(r.es,r.ar)+'</div>'; };
+    h+='<p class="hint">'+bit(TX.bankHint)+'</p>';
+    h+='<div class="bank-area" id="bankArea">';
+    var inBank=order.filter(function(id){ return !b[id]; });
+    h+= inBank.length ? inBank.map(function(id){ return chip(rowOf(id)); }).join('') : '<span class="bank-empty">'+bit(TX.allPlaced)+'</span>';
+    h+='</div><p class="placed-count">'+bi(TX.placed.es+': '+placed+'/'+q.rows.length, TX.placed.ar+': '+placed+'/'+q.rows.length)+'</p>';
+    h+='<div class="sorting-area">';
+    APAR.forEach(function(ap){
+      var items=order.filter(function(id){ return b[id]===ap.id; }).map(function(id){ return chip(rowOf(id)); }).join('');
+      h+='<div class="sort-box box-'+ap.id+'" role="button" tabindex="0" data-box="'+ap.id+'" data-fk="b'+ap.id+'"><div class="sort-box-header">'+bi(APICO[ap.id]+' '+ap.es, ap.ar)+'</div><div class="sort-content">'+items+'</div></div>';
+    });
+    h+='</div>';
+  }
+  var isSure=!!S.safe[q.id], can=started(q);
+  h+='<button type="button" id="safeBtn" data-fk="safe" class="safe'+(can?'':' off')+'" aria-pressed="'+isSure+'"><span class="star" aria-hidden="true">⭐</span><span class="st">'+bit(TX.sure)+'</span></button>';
+  h+='</article>';
+  $('qWrap').innerHTML=h;
+
+  $('btnPrev').disabled = (S.cur===0);
+  var last = (S.cur===TOTAL-1);
+  $('nextTxt').innerHTML = last ? bit(T.review) : bit(T.next);
+  $('nextArrow').textContent = last ? '✔' : '▶';
+
+  if(scrollTop===true){ window.scrollTo(0,0); } else { window.scrollTo(0,y); }
+  if(focusKey){ var f=$('qWrap').querySelector('[data-fk="'+focusKey+'"]'); if(f) f.focus({preventScroll:true}); }
+}
+
+function commit(q){
+  var a=S.answers[q.id];
+  if(a && typeof a==='object' && Object.keys(a).length===0){ delete S.answers[q.id]; delete S.safe[q.id]; }
+  save(); renderQuestion(false);
+}
+
+$('qWrap').addEventListener('click', function(e){
+  if(!S) return;
+  var q=curQ();
+  var t=e.target.closest('button');
+  if(t){
+    if(t.classList.contains('opt')){
+      var i=parseInt(t.getAttribute('data-i'),10);
+      if(S.answers[q.id]===i){ delete S.answers[q.id]; delete S.safe[q.id]; } else { S.answers[q.id]=i; }
+      save(); renderQuestion(false);
+    } else if(t.classList.contains('mbtn')){
+      var rid=t.getAttribute('data-row'), ap=t.getAttribute('data-ap');
+      var a=S.answers[q.id]||(S.answers[q.id]={});
+      if(a[rid]===ap) delete a[rid]; else a[rid]=ap;
+      commit(q);
+    } else if(t.id==='safeBtn'){
+      if(!started(q)){ toast(TX.toastFirst); return; }
+      if(S.safe[q.id]) delete S.safe[q.id]; else S.safe[q.id]=true;
+      save(); renderQuestion(false);
+    }
+    return;
+  }
+  if(q.type!=='bank') return;
+  var bx0=e.target.closest('.sort-box');
+  if(bx0 && selOrgan){               // tap-tap: colocar el órgano seleccionado (aunque se toque sobre otro órgano de la caja)
+    var a2=S.answers[q.id]||(S.answers[q.id]={});
+    a2[selOrgan]=bx0.getAttribute('data-box'); selOrgan=null; commit(q); return;
+  }
+  var it=e.target.closest('.draggable-item');
+  if(it){
+    var oid=it.getAttribute('data-oid'), b=S.answers[q.id]||{};
+    if(b[oid]){                       // colocado en una caja: vuelve al banco
+      delete b[oid]; selOrgan=null; commit(q);
+    } else {                          // en el banco: seleccionar / deseleccionar
+      selOrgan = (selOrgan===oid) ? null : oid; renderQuestion(false);
+    }
+    return;
+  }
+});
+
+/* teclado en órganos y cajas (Enter / Espacio) */
+$('qWrap').addEventListener('keydown', function(e){
+  if((e.key==='Enter'||e.key===' ') && e.target.matches && e.target.matches('.draggable-item, .sort-box')){ e.preventDefault(); e.target.click(); }
+});
+
+/* arrastrar y soltar (HTML5); convive con el tap-tap sin mezclar estados */
+function clearOver(){ document.querySelectorAll('.over').forEach(function(x){ x.classList.remove('over'); }); }
+$('qWrap').addEventListener('dragstart', function(e){
+  var it=e.target.closest && e.target.closest('.draggable-item'); if(!it) return;
+  dragOrgan=it.getAttribute('data-oid'); selOrgan=null;
+  document.querySelectorAll('.draggable-item.selected').forEach(function(x){ x.classList.remove('selected'); });
+  try{ e.dataTransfer.setData('text/plain', dragOrgan); e.dataTransfer.effectAllowed='move'; }catch(x){}
+});
+$('qWrap').addEventListener('dragend', function(){ dragOrgan=null; clearOver(); });
+$('qWrap').addEventListener('dragover', function(e){
+  var z=e.target.closest && e.target.closest('.sort-box, .bank-area'); if(!z||!dragOrgan) return;
+  e.preventDefault(); try{ e.dataTransfer.dropEffect='move'; }catch(x){}
+  if(!z.classList.contains('over')){ clearOver(); z.classList.add('over'); }
+});
+$('qWrap').addEventListener('dragleave', function(e){
+  var z=e.target.closest && e.target.closest('.sort-box, .bank-area');
+  if(z && !z.contains(e.relatedTarget)) z.classList.remove('over');
+});
+$('qWrap').addEventListener('drop', function(e){
+  var z=e.target.closest && e.target.closest('.sort-box, .bank-area'); if(!z||!S) return;
+  e.preventDefault(); clearOver();
+  var q=curQ(); if(q.type!=='bank') return;
+  var oid=dragOrgan; if(!oid){ try{ oid=e.dataTransfer.getData('text/plain'); }catch(x){} }
+  dragOrgan=null;
+  if(!oid || !q.rows.some(function(r){ return r.id===oid; })) return;
+  var a=S.answers[q.id]||(S.answers[q.id]={});
+  if(z.classList.contains('sort-box')) a[oid]=z.getAttribute('data-box'); else delete a[oid];
+  commit(q);
+});
+
+/* =====================  NAVEGACIÓN  ===================== */
+function goTo(i){ if(!S||i<0||i>=TOTAL) return; S.cur=i; selOrgan=null; save(); renderQuestion(true); }
+function prev(){ if(S && S.cur>0) goTo(S.cur-1); }
+function next(){ if(!S) return; if(S.cur<TOTAL-1) goTo(S.cur+1); else openReview(); }
+$('btnPrev').addEventListener('click', prev);
+$('btnNext').addEventListener('click', next);
+$('btnMenu').addEventListener('click', openMenu);
+$('menuClose').addEventListener('click', closeOverlay);
+$('revClose').addEventListener('click', closeOverlay);
+$('revKeep').addEventListener('click', closeOverlay);
+$('menuReview').addEventListener('click', openReview);
+$('menu').addEventListener('click', function(e){ if(e.target===$('menu')) closeOverlay(); });
+$('review').addEventListener('click', function(e){ if(e.target===$('review')) closeOverlay(); });
+
+document.addEventListener('keydown', function(e){
+  if(phase!=='exam' || !$('modal').hidden) return;
+  if(e.key==='Escape' && overlayOpen){ closeOverlay(); return; }
+  if(overlayOpen) return;
+  var tag=(e.target&&e.target.tagName)||'';
+  if(tag==='INPUT'||tag==='TEXTAREA') return;
+  if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); }
+  else if(e.key==='ArrowRight'){ e.preventDefault(); next(); }
+});
+
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden && phase==='exam' && S && !S.submitted){ S.leaves=(S.leaves||0)+1; save(); }
+});
+
+/* =====================  MENÚ Y REVISIÓN  ===================== */
+function chipHtml(i){
+  var q=QMAP[S.order[i]], st=status(q);
+  return '<button type="button" class="chip '+st+(i===S.cur?' now':'')+'" data-go="'+i+'" aria-label="'+esc(plain(TX.q))+' '+(i+1)+'">'+(i+1)+(st==='sure'?'<b aria-hidden="true">★</b>':'')+'</button>';
+}
+function renderLegend(){
+  $('legend').innerHTML =
+    '<span><i class="sw none"></i>'+bit(TX.lgNone)+'</span>'+
+    '<span><i class="sw done"></i>'+bit(TX.lgDone)+'</span>'+
+    '<span><i class="sw sure"></i>'+bit(TX.lgSure)+' ★</span>'+
+    '<span><i class="sw part"></i>'+bit(TX.lgPart)+'</span>'+
+    '<span><i class="sw now"></i>'+bit(TX.lgNow)+'</span>';
+}
+function renderMenu(){
+  renderLegend();
+  var h='';
+  SECTIONS.forEach(function(sec){
+    var idx=[]; S.order.forEach(function(id,i){ if(QMAP[id].sec===sec.id) idx.push(i); });
+    var done=idx.filter(function(i){ return complete(QMAP[S.order[i]]); }).length;
+    h+='<div class="msec s-'+sec.id+'"><div class="mhead"><span>'+bi(sec.ico+' '+sec.es, sec.ar)+'</span><small>'+done+'/'+idx.length+'</small></div><div class="chips">';
+    idx.forEach(function(i){ h+=chipHtml(i); });
+    h+='</div></div>';
+  });
+  $('menuBody').innerHTML=h;
+}
+function renderReview(){
+  var miss=[]; S.order.forEach(function(id,i){ var q=QMAP[id]; if(!complete(q)) miss.push(i); });
+  var h='<p class="sumline">'+bi(TX.answered.es+': '+countComplete()+' '+TX.of.es+' '+TOTAL, TX.answered.ar+': '+countComplete()+' '+TX.of.ar+' '+TOTAL)+'</p>';
+  if(miss.length){
+    h+='<p>'+bit(TX.missing)+'</p><div class="chips">'; miss.forEach(function(i){ h+=chipHtml(i); }); h+='</div>';
+  } else { h+='<p>'+bit(TX.allDone)+'</p>'; }
+  $('revBody').innerHTML=h;
+}
+function onChipClick(e){
+  var c=e.target.closest('[data-go]'); if(!c) return;
+  S.cur=parseInt(c.getAttribute('data-go'),10); selOrgan=null; save();
+  closeOverlay();
+}
+$('menuBody').addEventListener('click', onChipClick);
+$('revBody').addEventListener('click', onChipClick);
+
+$('revSubmit').addEventListener('click', function(){
+  var missing = TOTAL-countComplete();
+  var txt = missing>0 ? bit(TX.cTextMiss,{n:missing}) : bit(TX.cText);
+  showModal(bit(TX.cTitle), txt, [
+    {label:bit(TX.back), cls:'btn-ghost', fn:null},
+    {label:bit(TX.yesSubmit), cls:'btn-primary', fn:finishExam}
+  ]);
+});
+
+/* =====================  ENTREGA  ===================== */
+function finishExam(){
+  S.submitted=true; S.sent=false; S.tEnd=Date.now(); save();
+  phase='end'; selOrgan=null; closeOverlaysUI();
+  try{ history.replaceState({d:1},''); }catch(e){} depth=1;
+  show('s-end'); renderEnd(); sendNow();
+}
+var endState='sending';
+function renderEnd(){
+  var h='';
+  if(endState==='sending'){ h='<div class="spin" aria-hidden="true"></div><div class="status">'+bit(TX.sending)+'</div>'; }
+  else if(endState==='sent'){ h='<div class="bigicon" aria-hidden="true">🎉</div><div class="status">'+bit(TX.sent)+'</div><div class="status" style="font-size:1rem;font-weight:600">'+bit(TX.sentSub)+'</div>'; }
+  else { h='<div class="spin" aria-hidden="true"></div><div class="status">'+bit(TX.sendErr)+'</div><button type="button" class="btn btn-primary" id="btnRetry">'+bit(TX.retry)+'</button>'; }
+  $('endBody').innerHTML=h;
+  var r=$('btnRetry'); if(r) r.addEventListener('click', function(){ sendNow(); });
+}
+function buildPayload(){
+  var respuestas={}, seguras=[];
+  Q.forEach(function(q){
+    var a=S.answers[q.id]; if(a===undefined) return;
+    if(q.type==='single') respuestas[q.id]=LETTERS[a];
+    else respuestas[q.id]=a;
+    if(S.safe[q.id]) seguras.push(q.id);
+  });
+  var end = S.tEnd || Date.now();
+  return {tipo:TIPO, intento:S.attemptId, curso:S.curso, apellidos:S.apellidos, nombre:S.nombre,
+          respuestas:respuestas, seguras:seguras, tiempoSeg:Math.round((end-S.t0)/1000), salidas:S.leaves||0};
+}
+var sending=false, retryTimer=null;
+async function sendNow(){
+  if(sending || !S) return; sending=true; clearTimeout(retryTimer);
+  endState='sending'; renderEnd();
+  var body=JSON.stringify(buildPayload());
+  var ok=false;
+  await sleep(Math.random()*2000);   // reparte los envíos de toda la clase
+  for(var i=0;i<4 && !ok;i++){
+    var to=null;
+    try{
+      var ctrl=new AbortController(); to=setTimeout(function(){ ctrl.abort(); },25000);
+      var r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:body,signal:ctrl.signal,redirect:'follow'});
+      var j=await r.json();
+      if(j && j.ok) ok=true;
+    }catch(err){}
+    clearTimeout(to);
+    if(!ok) await sleep(1500*(i+1)+Math.random()*1500);
+  }
+  sending=false;
+  if(ok){ S.sent=true; clearSaved(); endState='sent'; renderEnd(); }
+  else { endState='error'; renderEnd(); retryTimer=setTimeout(sendNow,30000); }
+}
+window.addEventListener('online', function(){ if(phase==='end' && endState==='error') sendNow(); });
+
+/* =====================  ARRANQUE  ===================== */
+window.addEventListener('load', function(){
+  applyLang();
+  var sv=loadSaved();
+  if(sv && sv.submitted && !sv.sent){          // entregó pero no llegó a enviarse: reintentar
+    S=sv; phase='end'; show('s-end'); sendNow();
+  } else if(sv && sv.submitted && sv.sent){ clearSaved(); }
+  refreshResumeBox();
+});
+})();
+</script>
+</body>
+</html>
