@@ -111,6 +111,14 @@ input[type=text]:focus,input[type=password]:focus{ border-color:var(--blue-600);
 .hello{ font-size:clamp(1.3rem,4.5vw,1.8rem); font-weight:900; color:var(--blue-dark); overflow-wrap:anywhere; line-height:1.25; }
 .who{ color:var(--blue-700); font-weight:700; margin-top:.2rem; }
 .winfo{ color:var(--blue-700); margin:.8rem 0 1rem; line-height:1.5; }
+.prevbox{ margin:0 auto 1rem; max-width:360px; }
+.prevbox .fl{ text-align:center; margin-top:0; }
+#prevNota{ width:9rem; display:block; margin:0 auto; text-align:center; font-size:1.5rem; font-weight:800; }
+.hint{ font-size:.9rem; color:#555; text-align:center; margin:.5rem 0 0; }
+.finalbox{ background:#fff; border:3px solid var(--orange); border-radius:16px; padding:.9rem 1rem; margin:.9rem auto; max-width:420px; color:var(--blue-dark); }
+.finalbox .ft{ font-weight:800; color:var(--blue-700); }
+.finalbox .fn{ font-size:3.2rem; font-weight:900; line-height:1.1; }
+.finalbox .fd{ font-size:.95rem; font-weight:600; color:#444; margin-top:.3rem; }
 .wbtns{ display:flex; flex-direction:column; align-items:center; gap:.6rem; }
 .wbtns .btn{ width:100%; max-width:320px; }
 .syncline{ text-align:right; font-size:.82rem; color:#7a86a8; font-weight:600; min-height:1.2em; margin:-.4rem 0 .5rem; }
@@ -256,7 +264,7 @@ input[type=text]:focus,input[type=password]:focus{ border-color:var(--blue-600);
       <div class="subtitle" data-i18n="subtitle">4.º de Primaria · Los aparatos de la nutrición</div>
     </header>
     <div class="start-content">
-      <div class="advice-box" data-i18n="intro">Lee cada pregunta con <span class="highlight-keyword">calma</span>. Puedes ir y volver con las <span class="highlight-keyword">flechas</span> y usar el <span class="highlight-keyword">menú</span> para saltar a cualquier pregunta. Marca <span class="highlight-keyword">«Estoy seguro/a»</span> cuando lo estés de tu respuesta. Al terminar no verás la nota: tu maestro la revisará.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong></div>
+      <div class="advice-box" data-i18n="intro">Lee cada pregunta con <span class="highlight-keyword">calma</span>. Puedes ir y volver con las <span class="highlight-keyword">flechas</span> y usar el <span class="highlight-keyword">menú</span> para saltar a cualquier pregunta. Marca <span class="highlight-keyword">«Estoy seguro/a»</span> cuando lo estés de tu respuesta. Al terminar verás tu nota final: este examen vale 7 puntos y los otros 3 son de la prueba anterior.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong></div>
 
       <form id="loginForm" class="form" autocomplete="off" novalidate>
         <label class="fl" for="usr" data-i18n="lblUser">Usuario</label>
@@ -274,6 +282,12 @@ input[type=text]:focus,input[type=password]:focus{ border-color:var(--blue-600);
         <div class="hello" id="helloTxt"></div>
         <div class="who" id="whoTxt"></div>
         <p class="winfo" id="welcomeMsg"></p>
+        <div id="prevBox" class="prevbox" hidden>
+          <label class="fl" for="prevNota" id="prevLbl"></label>
+          <input type="text" id="prevNota" inputmode="decimal" maxlength="5" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="_ , _">
+          <p class="hint" id="prevHint"></p>
+          <p class="err" id="prevErr"></p>
+        </div>
         <div class="wbtns">
           <button type="button" id="btnGo" class="btn btn-primary"></button>
           <button type="button" id="btnRestart" class="btn btn-ghost" hidden data-i18n="restart">Empezar de nuevo</button>
@@ -365,8 +379,8 @@ var LS_LANG = 'siurot_examen_nutricion_4_lang';
 var T = {
   title:{es:'Evaluación de Nutrición', ar:'تقييم التغذية'},
   subtitle:{es:'4.º de Primaria · Los aparatos de la nutrición', ar:'الرابع ابتدائي · أجهزة التغذية'},
-  intro:{es:'Lee cada pregunta con <span class="highlight-keyword">calma</span>. Puedes ir y volver con las <span class="highlight-keyword">flechas</span> y usar el <span class="highlight-keyword">menú</span> para saltar a cualquier pregunta. Marca <span class="highlight-keyword">«Estoy seguro/a»</span> cuando lo estés de tu respuesta. Al terminar no verás la nota: tu maestro la revisará.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong>',
-         ar:'قرا كل سؤال بتأنّي. تقدر تمشي وترجع بالسهمين وتستعمل القائمة باش تمشي لأي سؤال. حط علامة «أنا متأكد/ة» ملي تكون متأكد/ة من الجواب ديالك. ملي تسالي ما غاديش تشوف النقطة: الأستاذ هو اللي غادي يراجع الامتحان. بالتوفيق!', html:true},
+  intro:{es:'Lee cada pregunta con <span class="highlight-keyword">calma</span>. Puedes ir y volver con las <span class="highlight-keyword">flechas</span> y usar el <span class="highlight-keyword">menú</span> para saltar a cualquier pregunta. Marca <span class="highlight-keyword">«Estoy seguro/a»</span> cuando lo estés de tu respuesta. Al terminar verás tu nota final: este examen vale 7 puntos y los otros 3 son de la prueba anterior.<br><strong style="display:block;margin-top:.5rem;text-align:center;">¡Ánimo!</strong>',
+         ar:'قرا كل سؤال بتأنّي. تقدر تمشي وترجع بالسهمين وتستعمل القائمة باش تمشي لأي سؤال. حط علامة «أنا متأكد/ة» ملي تكون متأكد/ة من الجواب ديالك. ملي تسالي غادي تشوف النقطة النهائية ديالك: هاد الامتحان فيه 7 نقط والـ 3 الآخرين من الاختبار اللي دازت. بالتوفيق!', html:true},
   lblApe:{es:'Apellidos', ar:'اللقب'},
   lblNom:{es:'Nombre', ar:'الاسم'},
   lblCurso:{es:'Curso', ar:'القسم'},
@@ -393,6 +407,11 @@ var TX = {
   hello:{es:'¡Hola, {name}!', ar:'مرحبا {name}!'},
   whoCurso:{es:'Tu clase: {curso}', ar:'القسم ديالك: {curso}'},
   draftInfo:{es:'Tienes un examen empezado: vas por la pregunta {n} y has contestado {k} de {t}. ¿Quieres continuar?', ar:'عندك امتحان بديتيه: وصلتي للسؤال {n} وجاوبتي على {k} من {t}. واش بغيتي تكمّل؟'},
+  lblPrev:{es:'Nota de la prueba anterior (de 0 a 3)', ar:'نقطة الاختبار اللي دازت (من 0 ل 3)'},
+  prevHint:{es:'Escríbela con coma o con punto. Por ejemplo: 2,8', ar:'كتبها بالفاصلة ولا بالنقطة. بحال: 2,8'},
+  prevErr:{es:'Escribe un número entre 0 y 3 (por ejemplo 2,8).', ar:'كتب رقم بين 0 و 3 (بحال 2,8).'},
+  finalTitle:{es:'Tu nota final', ar:'النقطة النهائية ديالك'},
+  finalDetail:{es:'Prueba anterior {p} + esta prueba {e} = {f} sobre 10', ar:'الاختبار اللي دازت {p} + هاد الاختبار {e} = {f} من 10'},
   freshInfo:{es:'Cuando estés listo o lista, pulsa «Comenzar».', ar:'ملي تكون واجد/ة، ضغط على «بدا».'},
   doneInfo:{es:'Ya has entregado este examen. ¡Gracias!', ar:'سلّمتي هاد الامتحان من قبل. شكرا!'},
   errEmpty:{es:'Escribe tu usuario y tu clave.', ar:'كتب اسم المستخدم وكلمة السر.'},
@@ -724,7 +743,7 @@ function loadSaved(usuario){
 }
 function clearSaved(usuario){ try{ localStorage.removeItem(lsKey(usuario)); }catch(e){} }
 
-function newAttempt(u){
+function newAttempt(u,prev){
   var order=[];
   SECTIONS.forEach(function(sec){
     var ids = Q.filter(function(q){ return q.sec===sec.id; }).map(function(q){ return q.id; });
@@ -732,7 +751,7 @@ function newAttempt(u){
   });
   var rowOrder={};
   Q.forEach(function(q){ if(q.rows) rowOrder[q.id]=shuffle(q.rows.map(function(r){ return r.id; })); });
-  return {attemptId:uid(), usuario:u.usuario, alumno:u.alumno, curso:u.curso, order:order, rowOrder:rowOrder,
+  return {attemptId:uid(), usuario:u.usuario, alumno:u.alumno, curso:u.curso, previa:prev, order:order, rowOrder:rowOrder,
           answers:{}, safe:{}, cur:0, t0:Date.now(), act:0, upd:Date.now(), leaves:0, submitted:false, sent:false};
 }
 
@@ -887,6 +906,22 @@ $('pwdEye').addEventListener('click', function(){
   this.textContent = show ? '🙈' : '👁';
 });
 
+function nf(n){ return String(Math.round(Number(n)*100)/100).replace('.',','); }
+function parsePrev(t){
+  t=String(t||'').trim().replace(',','.');
+  if(!/^\d{1,2}(\.\d{1,2})?$/.test(t)) return null;
+  var n=parseFloat(t); return (n>=0 && n<=3) ? Math.round(n*100)/100 : null;
+}
+function readPrev(){
+  var v=parsePrev($('prevNota').value);
+  if(v===null){ $('prevErr').innerHTML=bit(TX.prevErr); try{ $('prevNota').focus(); }catch(e){} }
+  else $('prevErr').textContent='';
+  return v;
+}
+function finalHtml(r){
+  return '<div class="finalbox"><div class="ft">'+bit(TX.finalTitle)+'</div><div class="fn">'+nf(r.final)+' / 10</div><div class="fd">'+
+    bit(TX.finalDetail,{p:nf(r.previa),e:nf(r.notaExamen),f:nf(r.final)})+'</div></div>';
+}
 function paintWelcome(){
   var w=$('welcome');
   if(!USER || phase!=='start'){ w.hidden=true; $('loginForm').hidden = !!USER; return; }
@@ -894,8 +929,13 @@ function paintWelcome(){
   $('helloTxt').innerHTML = bi(TX.hello.es.replace('{name}',USER.alumno), TX.hello.ar.replace('{name}',USER.alumno));
   $('whoTxt').innerHTML = bi(TX.whoCurso.es.replace('{curso}',USER.curso), TX.whoCurso.ar.replace('{curso}',USER.curso));
   var go=$('btnGo'), rs=$('btnRestart');
+  var pb=$('prevBox'); pb.hidden=!!USER.done;
+  if(!USER.done){
+    $('prevLbl').innerHTML=bit(TX.lblPrev); $('prevHint').innerHTML=bit(TX.prevHint);
+    if(!$('prevNota').value && S && S.previa!=null) $('prevNota').value=nf(S.previa);
+  }
   if(USER.done){
-    $('welcomeMsg').innerHTML=bit(TX.doneInfo); go.hidden=true; rs.hidden=true;
+    $('welcomeMsg').innerHTML=bit(TX.doneInfo)+((USER.res && USER.res.final!==undefined && USER.res.final!=='') ? finalHtml(USER.res) : ''); go.hidden=true; rs.hidden=true;
   } else if(S && !S.submitted){
     var k=countComplete();
     $('welcomeMsg').innerHTML=bit(TX.draftInfo,{n:S.cur+1,k:k,t:TOTAL});
@@ -905,7 +945,7 @@ function paintWelcome(){
   }
 }
 function showLogin(msg){
-  USER=null; S=null; phase='start'; $('loginForm').hidden=false; $('welcome').hidden=true;
+  USER=null; S=null; phase='start'; $('loginForm').hidden=false; $('welcome').hidden=true; $('prevNota').value=''; $('prevErr').textContent='';
   $('usr').value=''; $('pwd').value=''; $('pwd').type='password'; $('pwdEye').setAttribute('aria-pressed','false'); $('pwdEye').textContent='👁';
   $('loginErr').innerHTML = msg ? bit(msg) : '';
   setSync('idle'); syncDirty=false; clearTimeout(syncTimer); syncTimer=null; lastTick=0;
@@ -932,7 +972,8 @@ $('loginForm').addEventListener('submit', async function(e){
   var j=await postJson({tipo:TIPO,accion:'entrar',usuario:u,clave:c},25000);
   loggingIn=false; btn.disabled=false; btn.innerHTML='<span data-i18n="login">'+bit(T.login)+'</span>';
   if(!j || !j.ok){ err.innerHTML=loginError(j); return; }
-  USER={usuario:u, clave:c, alumno:j.alumno, curso:j.curso, done:!!j.entregado};
+  USER={usuario:u, clave:c, alumno:j.alumno, curso:j.curso, done:!!j.entregado, res:j.entregado?{final:j.final,previa:j.previa,notaExamen:j.notaExamen}:null};
+  $('prevNota').value=''; $('prevErr').textContent='';
   S=null;
   if(!USER.done){
     var local=loadSaved(u), server=checkState(j.borrador,u);
@@ -948,14 +989,17 @@ $('loginForm').addEventListener('submit', async function(e){
 
 $('btnGo').addEventListener('click', function(){
   if(!USER) return;
-  if(!S){ S=newAttempt(USER); save(); }
-  beginExam();
+  var pv=readPrev(); if(pv===null) return;
+  if(!S){ S=newAttempt(USER,pv); } else S.previa=pv;
+  save(); beginExam();
 });
+$('prevNota').addEventListener('input', function(){ $('prevErr').textContent=''; });
 $('btnRestart').addEventListener('click', function(){
   if(!USER) return;
+  if(readPrev()===null) return;
   showModal(bit(TX.dTitle), bit(TX.dText,{name:esc(USER.alumno)}), [
     {label:bit(TX.back), cls:'btn-ghost', fn:null},
-    {label:bit(TX.yesNew), cls:'btn-danger', fn:function(){ S=newAttempt(USER); save(); beginExam(); }}
+    {label:bit(TX.yesNew), cls:'btn-danger', fn:function(){ var pv=readPrev(); if(pv===null) return; S=newAttempt(USER,pv); save(); beginExam(); }}
   ]);
 });
 $('btnLogout').addEventListener('click', function(){ if(USER && S && !S.submitted) save(); showLogin(); });
@@ -1219,11 +1263,11 @@ function finishExam(){
   try{ history.replaceState({d:1},''); }catch(e){} depth=1;
   show('s-end'); renderEnd(); sendNow();
 }
-var endState='sending';
+var endState='sending', RES=null;
 function renderEnd(){
   var h='';
   if(endState==='sending'){ h='<div class="spin" aria-hidden="true"></div><div class="status">'+bit(TX.sending)+'</div>'; }
-  else if(endState==='sent'){ h='<div class="bigicon" aria-hidden="true">🎉</div><div class="status">'+bit(TX.sent)+'</div><div class="status" style="font-size:1rem;font-weight:600">'+bit(TX.sentSub)+'</div><button type="button" class="btn btn-blue" id="btnHome">'+bit(T.home)+'</button>'; }
+  else if(endState==='sent'){ h='<div class="bigicon" aria-hidden="true">🎉</div><div class="status">'+bit(TX.sent)+'</div>'+(RES?finalHtml(RES):'')+'<div class="status" style="font-size:1rem;font-weight:600">'+bit(TX.sentSub)+'</div><button type="button" class="btn btn-blue" id="btnHome">'+bit(T.home)+'</button>'; }
   else { h='<div class="spin" aria-hidden="true"></div><div class="status">'+bit(TX.sendErr)+'</div><button type="button" class="btn btn-primary" id="btnRetry">'+bit(TX.retry)+'</button>'; }
   $('endBody').innerHTML=h;
   var r=$('btnRetry'); if(r) r.addEventListener('click', function(){ sendNow(); });
@@ -1237,7 +1281,7 @@ function buildPayload(){
     else respuestas[q.id]=a;
     if(S.safe[q.id]) seguras.push(q.id);
   });
-  return {tipo:TIPO, accion:'entregar', intento:S.attemptId, usuario:USER.usuario, clave:USER.clave,
+  return {tipo:TIPO, accion:'entregar', intento:S.attemptId, usuario:USER.usuario, clave:USER.clave, previa:S.previa,
           respuestas:respuestas, seguras:seguras, tiempoSeg:Math.round(S.act||0), salidas:S.leaves||0};
 }
 var sending=false, retryTimer=null;
@@ -1253,7 +1297,7 @@ async function sendNow(){
       var ctrl=new AbortController(); to=setTimeout(function(){ ctrl.abort(); },25000);
       var r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:body,signal:ctrl.signal,redirect:'follow'});
       var j=await r.json();
-      if(j && (j.ok || j.error==='yaEntregado')) ok=true;
+      if(j && (j.ok || j.error==='yaEntregado')){ ok=true; if(j.ok && j.final!==undefined) RES=j; }
     }catch(err){}
     clearTimeout(to);
     if(!ok) await sleep(1500*(i+1)+Math.random()*1500);
